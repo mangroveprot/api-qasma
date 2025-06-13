@@ -44,7 +44,7 @@ export const config: Config = {
   port: parseInt(process.env.PORT || '3000', 10),
   db: {
     mongoose: {
-      uri: process.env.MONGO_URI || '', // Make sure this key matches your `.env` file
+      uri: process.env.MONGO_URI || '',
       name: process.env.MONGOOSE_DBNAME || '',
     },
   },
@@ -53,7 +53,7 @@ export const config: Config = {
     max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
   },
   bcrypt: {
-    saltRound: parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10), // Fixed incorrect key
+    saltRound: parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10),
   },
   otp: {
     length: parseInt(process.env.OTP_LENGTH || '6', 10),
