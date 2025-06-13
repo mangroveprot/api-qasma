@@ -5,7 +5,7 @@ import {
 } from '../../../common/shared/types';
 import { ErrorResponse } from '../../../common/shared/utils';
 import { config } from '../../../core/config';
-import { IUserStudentDocument } from '../../users/models/mongoose';
+import { IUserModel } from '../../users/models/mongoose';
 import { UserService } from '../../users/services';
 import MailServiceUtilities from '../../../common/shared/services/mail/mail.service.utility';
 class AuthService {
@@ -13,10 +13,10 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
-      const { email } = payload;
+      const { email, idNumber } = payload;
       const userResponse = (await UserService.findOne({
-        $or: [{ idNumber: { $exists: true } }, { email: { $exists: true } }],
-      })) as SuccessResponseType<IUserStudentDocument>;
+        $or: [{ idNumber }, { email }],
+      })) as SuccessResponseType<IUserModel>;
 
       if (userResponse.success || userResponse.document) {
         throw new ErrorResponse(
@@ -27,7 +27,7 @@ class AuthService {
 
       const createUserRes = (await UserService.create(
         payload,
-      )) as SuccessResponseType<IUserStudentDocument>;
+      )) as SuccessResponseType<IUserModel>;
 
       if (!createUserRes.success || !createUserRes.document) {
         throw createUserRes.error;
@@ -53,6 +53,38 @@ class AuthService {
     }
   }
 
+  /*
+  async verifyAccount(
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const {email, code } = payload;
+      const userResponse = (await UserService.findOne({
+        email
+      })) as SuccessResponseType<IUserModel>
+
+      if(!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
+      }
+
+      if (userResponse.document.verified) {
+        return { success: true }; // If already verified, return success without further actions
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+*/
+
   async login(
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
@@ -60,7 +92,7 @@ class AuthService {
       const { idNumber, password } = payload;
       const userResponse = (await UserService.findOne({
         idNumber,
-      })) as SuccessResponseType<IUserStudentDocument>;
+      })) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
@@ -107,8 +139,8 @@ class AuthService {
     try {
       const { email, idNumber } = payload;
       const userResponse = (await UserService.findOne(
-        idNumber ? { idNumber } : { email },
-      )) as SuccessResponseType<IUserStudentDocument>;
+        idNumber ? { idNumber } : { email }, // idk if this is good but u can use this instead : $or: [{ idNumber }, { email }],
+      )) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
@@ -145,7 +177,7 @@ class AuthService {
 
       const userResponse = (await UserService.findOne(
         idNumber ? { idNumber } : { email },
-      )) as SuccessResponseType<IUserStudentDocument>;
+      )) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');

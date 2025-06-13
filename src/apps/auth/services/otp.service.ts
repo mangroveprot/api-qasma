@@ -7,7 +7,7 @@ import MailServiceUtilities from '../../../common/shared/services/mail/mail.serv
 import { config } from '../../../core/config';
 import { BaseService } from '../../../core/engine';
 import { generateRandomOTP } from '../../../helpers/generateRandomOTP';
-import { IUserStudentDocument, UserService } from '../../users';
+import { IUserModel, UserService } from '../../users';
 import { OTPModel } from '../models';
 import { OTPRepository } from '../repositories';
 import { IOTPModel, TOTPPurpose } from '../types';
@@ -25,7 +25,7 @@ class OTPService extends BaseService<IOTPModel, OTPRepository> {
     try {
       const userResponse = (await UserService.findOne({
         email,
-      })) as SuccessResponseType<IUserStudentDocument>;
+      })) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
@@ -74,7 +74,7 @@ class OTPService extends BaseService<IOTPModel, OTPRepository> {
     try {
       const userResponse = (await UserService.findOne({
         email,
-      })) as SuccessResponseType<IUserStudentDocument>;
+      })) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');

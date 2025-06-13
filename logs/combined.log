@@ -1682,3 +1682,225 @@ Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\P
     at C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\src\common\shared\services\mail\mail.service.utility.ts:8:71
 [2025-06-11 16:22:56] (info): Mongodb Initialized...
 [2025-06-11 16:22:57] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:41:44] (info): Mongodb Initialized...
+[2025-06-13 09:41:44] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:51:15] (info): Mongodb Initialized...
+[2025-06-13 09:51:15] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:52:40] (info): Mongodb Initialized...
+[2025-06-13 09:52:40] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:53:35] (info): Mongodb Initialized...
+[2025-06-13 09:53:35] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:53:58] (info): Mongodb Initialized...
+[2025-06-13 09:53:58] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:54:20] (info): Mongodb Initialized...
+[2025-06-13 09:54:20] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:57:53] (info): Mongodb Initialized...
+[2025-06-13 09:57:53] (info): Mongodb has been connected sucessfully!
+[2025-06-13 09:59:40] (info): Mongodb Initialized...
+[2025-06-13 09:59:40] (info): Mongodb has been connected sucessfully!
+[2025-06-13 10:03:26] (info): Mongodb Initialized...
+[2025-06-13 10:03:26] (info): Mongodb has been connected sucessfully!
+[2025-06-13 10:38:24] (info): Mongodb Initialized...
+[2025-06-13 10:38:24] (info): Mongodb Initialized...
+[2025-06-13 10:38:26] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:38:26] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:39:18] (info): Mongodb Initialized...
+[2025-06-13 10:39:20] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:58:21] (info): Mongodb Initialized...
+[2025-06-13 10:58:23] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:03:56] (info): Mongodb Initialized...
+[2025-06-13 11:03:59] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:05:38] (info): Mongodb Initialized...
+[2025-06-13 11:05:40] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:06:13] (info): Mongodb Initialized...
+[2025-06-13 11:06:15] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:09:07] (info): Mongodb Initialized...
+[2025-06-13 11:09:07] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:27:32] (info): Mongodb Initialized...
+[2025-06-13 11:27:32] (info): Mongodb Initialized...
+[2025-06-13 11:27:32] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:27:32] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:30:11] (info): Mongodb Initialized...
+[2025-06-13 11:30:11] (info): Mongodb Initialized...
+[2025-06-13 11:30:11] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:30:11] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:43:41] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:44:11] (info): Mongodb Initialized...
+[2025-06-13 11:44:11] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:44:13] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:45:06] (info): Mongodb Initialized...
+[2025-06-13 11:45:06] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:45:06] (info): Mongodb Initialized...
+[2025-06-13 11:45:06] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:46:30] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:47:46] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 11:51:11] (info): Mongodb Initialized...
+[2025-06-13 11:51:11] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:51:11] (info): Mongodb Initialized...
+[2025-06-13 11:51:11] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:52:52] (info): Mongodb Initialized...
+[2025-06-13 11:52:52] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:52:52] (info): Mongodb Initialized...
+[2025-06-13 11:52:52] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:53:31] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 11:54:45] (info): Mongodb Initialized...
+[2025-06-13 11:54:45] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:54:51] (error): Error sending email
+Error: queryA EBADNAME localhos:1080
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/callback_resolver:45:19)
+[2025-06-13 11:55:24] (info): Mongodb Initialized...
+[2025-06-13 11:55:24] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:55:33] (error): Error sending email
+Error: queryA EBADNAME localhost:1080
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/callback_resolver:45:19)
+[2025-06-13 11:57:48] (info): Mongodb Initialized...
+[2025-06-13 11:57:48] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:57:48] (info): Mongodb Initialized...
+[2025-06-13 11:57:48] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:58:21] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 11:58:59] (info): Mongodb Initialized...
+[2025-06-13 11:58:59] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:58:59] (info): Mongodb Initialized...
+[2025-06-13 11:58:59] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:59:36] (info): Mongodb Initialized...
+[2025-06-13 11:59:36] (info): Mongodb has been connected sucessfully!
+[2025-06-13 11:59:36] (info): Mongodb Initialized...
+[2025-06-13 11:59:36] (info): Mongodb has been connected sucessfully!
+[2025-06-13 12:00:04] (info): Mongodb Initialized...
+[2025-06-13 12:00:05] (info): Mongodb has been connected sucessfully!
+[2025-06-13 12:01:42] (info): Mongodb Initialized...
+[2025-06-13 12:01:42] (info): Mongodb has been connected sucessfully!
+[2025-06-13 12:02:18] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 12:05:31] (info): Mongodb Initialized...
+[2025-06-13 12:05:31] (info): Mongodb has been connected sucessfully!
+[2025-06-13 12:06:09] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 12:06:38] (info): Mongodb Initialized...
+[2025-06-13 12:06:40] (info): Mongodb has been connected sucessfully!
+[2025-06-13 13:41:12] (info): Mongodb Initialized...
+[2025-06-13 13:41:12] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:42:12] (info): Mongodb Initialized...
+[2025-06-13 14:42:12] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:46:37] (info): Mongodb Initialized...
+[2025-06-13 14:46:37] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:46:44] (info): Mongodb Initialized...
+[2025-06-13 14:46:44] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:47:00] (info): Mongodb Initialized...
+[2025-06-13 14:47:00] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:47:57] (info): Mongodb Initialized...
+[2025-06-13 14:47:57] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:48:05] (info): Mongodb Initialized...
+[2025-06-13 14:48:05] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:50:44] (info): Mongodb Initialized...
+[2025-06-13 14:50:44] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:50:57] (info): Mongodb Initialized...
+[2025-06-13 14:50:57] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:51:07] (info): Mongodb Initialized...
+[2025-06-13 14:51:07] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:51:34] (info): Mongodb Initialized...
+[2025-06-13 14:51:34] (info): Mongodb has been connected sucessfully!
+[2025-06-13 14:51:57] (info): Mongodb Initialized...
+[2025-06-13 14:51:57] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:17:01] (info): Mongodb Initialized...
+[2025-06-13 15:17:01] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:17:01] (info): Mongodb Initialized...
+[2025-06-13 15:17:01] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:27:02] (info): Mongodb Initialized...
+[2025-06-13 15:27:02] (info): Mongodb Initialized...
+[2025-06-13 15:27:02] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:27:02] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:27:47] (info): Mongodb Initialized...
+[2025-06-13 15:27:47] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:45:06] (info): Mongodb Initialized...
+[2025-06-13 15:45:06] (info): Mongodb Initialized...
+[2025-06-13 15:45:06] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:45:06] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:45:41] (info): Mongodb Initialized...
+[2025-06-13 15:45:41] (info): Mongodb Initialized...
+[2025-06-13 15:45:41] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:45:41] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:48:06] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 15:53:24] (info): Mongodb Initialized...
+[2025-06-13 15:53:24] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:54:16] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 15:58:58] (info): Mongodb Initialized...
+[2025-06-13 15:58:58] (info): Mongodb has been connected sucessfully!
+[2025-06-13 15:59:23] (info): Mongodb Initialized...
+[2025-06-13 15:59:23] (info): Mongodb has been connected sucessfully!
+[2025-06-13 16:01:14] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 16:03:15] (info): Mongodb Initialized...
+[2025-06-13 16:03:15] (info): Mongodb has been connected sucessfully!

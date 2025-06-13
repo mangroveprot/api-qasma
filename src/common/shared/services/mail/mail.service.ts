@@ -63,11 +63,12 @@ class MailService {
         text,
         html: htmlContent,
       };
-
+      console.log(config.mail);
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {
       logger.error('Error sending email', error as Error);
+      console.log(error);
       return {
         success: false,
         error: new ErrorResponse(
