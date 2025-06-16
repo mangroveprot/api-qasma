@@ -139,6 +139,77 @@ netstat -ano | findstr :what_port
 taskkill /PID the_PID  /F
 ```
 
-## Documentation
+Certainly! Here's a **short, clean, and professional** version of your MongoDB setup guide, written from the perspective of an experienced developer:
+
+---
+
+## MongoDB Setup (Docker + Compass)
+
+# 1. Pull & Run MongoDB via Docker
+
+```bash
+docker pull mongo:latest
+docker run --name mongodb -p 27020:27017 -d mongo
+```
+
+- Maps container port `27017` to local port `27020`.
+
+# 2. Create Admin User
+
+```bash
+docker exec -it mongodb mongosh
+```
+
+```js
+use admin
+
+db.createUser({
+  user: "root",
+  pwd: "password",
+  roles: [{ role: "root", db: "admin" }]
+})
+```
+
+## 3. Connect Using MongoDB Compass
+
+# Connection String:
+
+```
+mongodb://root:password@localhost:27020/?authSource=admin
+```
+
+# Or Fill Fields:
+
+- **Host**: `localhost`
+- **Port**: `27020`
+- **Username**: `root`
+- **Password**: `password`
+- **Authentication DB**: `admin`
+
+Connect and you're ready to work.
+
+---
+
+## ▶️ How to Start MongoDB Again (Same Container)
+
+To start it again later:
+
+```bash
+docker start mongodb
+```
+
+That’s it — your data, user (`root`), and databases (like `qasma_db`) will still be there.
+
+---
+
+## 🔁 Check It’s Running
+
+To verify:
+
+```bash
+docker ps
+```
+
+### Documentation
 
 You can see it [here](DOCS.md).
