@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx tsc -p .",
     "start:prod": "node .",
-    "start": "cross-env NODE_ENV=production npx nodemon src/server.ts"
+    "start": "cross-env NODE_ENV=development npx nodemon src/server.ts"
   },
   "keywords": [],
   "author": "",

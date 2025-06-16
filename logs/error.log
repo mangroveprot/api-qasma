@@ -1138,3 +1138,102 @@ Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\P
     at Function.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\src\common\shared\services\mail\mail.service.utility.ts:63:30)
     at Generator.next (<anonymous>)
     at C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\src\common\shared\services\mail\mail.service.utility.ts:8:71
+[2025-06-13 10:38:26] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:38:26] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:39:20] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 10:58:23] (error): Connnection error: 
+MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:03:59] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:05:40] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:06:15] (error): Connnection error: 
+MongooseServerSelectionError: Server selection timed out after 2000 ms
+    at _handleConnectionErrors (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1165:11)
+    at NativeConnection.openUri (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\mongoose\lib\connection.js:1096:11)
+[2025-06-13 11:43:41] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:44:13] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:46:30] (error): Error sending email
+Error: connect ECONNREFUSED ::1:1080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16)
+[2025-06-13 11:47:46] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 11:53:31] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 11:54:51] (error): Error sending email
+Error: queryA EBADNAME localhos:1080
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/callback_resolver:45:19)
+[2025-06-13 11:55:33] (error): Error sending email
+Error: queryA EBADNAME localhost:1080
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/callback_resolver:45:19)
+[2025-06-13 11:58:21] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 12:02:18] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 12:06:09] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 15:48:06] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 15:54:16] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)
+[2025-06-13 16:01:14] (error): Error sending email
+Error: Greeting never received
+    at SMTPConnection._formatError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+    at SMTPConnection._onError (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+    at Timeout.<anonymous> (C:\Users\Administrator\Desktop\Programs\PROJECT_1\BACKEND-JRMSU-KC-QASMA\node_modules\nodemailer\lib\smtp-connection\index.js:729:22)
+    at listOnTimeout (node:internal/timers:594:17)
+    at processTimers (node:internal/timers:529:7)

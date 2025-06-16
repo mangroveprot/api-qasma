@@ -1,45 +1,50 @@
-import { CallbackError, Document, modelNames } from 'mongoose';
+import { CallbackError, Document, modelNames, Schema } from 'mongoose';
 import bycrypt from 'bcrypt';
-import { IUserStudent } from '../../types/student';
-import { BaseModel, createBaseSchema } from '../../../../core/engine';
+import {
+  BaseModel,
+  createBaseSchema,
+  IBaseModel,
+} from '../../../../core/engine';
 import { config } from '../../../../core/config';
 import { boolean } from 'joi';
+import { IUser } from '../../types/IUser';
 
 const USER_MODEL_NAME = 'User';
 
-export interface IUserStudentDocument extends IUserStudent, Document {}
+export interface IUserModel extends IUser, IBaseModel, Document {}
 
-const UserStudentSchema = createBaseSchema<IUserStudentDocument>(
+const UserSchema = createBaseSchema<IUserModel>(
   {
-    idNumber: { type: String, unique: true, required: true },
-    email: { type: String, required: true },
+    idNumber: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['student', 'facil'], default: 'student' },
-    isVerified: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: false },
-    course: { type: String, required: true },
-    block: { type: String, required: false },
-    year_level: { type: Number, required: true },
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: true },
-    middle_name: { type: String, required: false },
-    suffix: { type: String, required: false },
-    gender: {
+    role: {
       type: String,
-      enum: ['male', 'female', 'other'],
-      default: 'other',
+      enum: ['student', 'staff', 'counselor'],
+      required: true,
     },
+    verified: { type: Boolean, default: false },
+    active: { type: Boolean, default: true },
+    first_name: { type: String, required: true },
+    middle_name: { type: String },
+    last_name: { type: String, required: true },
+    suffix: { type: String },
+    gender: { type: String, enum: ['male', 'female', 'other'], required: true },
     date_of_birth: { type: Date, required: true },
-    address: { type: String, required: true },
-    contact_number: { type: String, required: false },
-    facebook: { type: String, required: false },
+    contact_number: { type: String, required: true },
+    address: { type: String },
+    facebook: { type: String },
+    other_info: {
+      type: Schema.Types.Mixed,
+      required: true,
+    },
   },
   {
     modelName: USER_MODEL_NAME,
   },
 );
 
-UserStudentSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function (next) {
   try {
     if (this.isNew || this.isModified('password')) {
       const salt = await bycrypt.genSalt(config.bcrypt.saltRound);
@@ -52,9 +57,9 @@ UserStudentSchema.pre('save', async function (next) {
   }
 });
 
-const UserStudentModelMongoose = new BaseModel<IUserStudentDocument>(
+const UserModelMongoose = new BaseModel<IUserModel>(
   USER_MODEL_NAME,
-  UserStudentSchema,
+  UserSchema,
 ).getModel();
 
-export default UserStudentModelMongoose;
+export default UserModelMongoose;

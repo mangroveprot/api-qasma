@@ -1,2 +1,3 @@
-export * from './student';
-export * from './user-profile';
+export * from './TOICounselor';
+export * from './TOIStaff';
+export * from './TOIStudent';

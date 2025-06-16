@@ -125,6 +125,20 @@ Start your development server using:
 npm start
 ```
 
+### Other References :)
+
+# Stop a running port
+
+```bash
+netstat -ano | findstr :what_port
+```
+
+- This return a PID in that port. So to stop that:
+
+```bash
+taskkill /PID the_PID  /F
+```
+
 ## Documentation
 
 You can see it [here](DOCS.md).

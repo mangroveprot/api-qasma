@@ -1,11 +1,11 @@
 import { Model } from 'mongoose';
 import { BaseRepository } from '../../../core/engine';
-import { IUserStudentDocument } from '../models/mongoose';
+import { IUserModel } from '../models/mongoose';
 
-export class UserStudentMongooseRepository extends BaseRepository<IUserStudentDocument> {
-  constructor(model: Model<IUserStudentDocument>) {
+export class UserMongooseRepository extends BaseRepository<IUserModel> {
+  constructor(model: Model<IUserModel>) {
     super(model);
   }
 }
 
-export default UserStudentMongooseRepository;
+export default UserMongooseRepository;
