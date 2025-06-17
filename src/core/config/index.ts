@@ -13,6 +13,20 @@ interface Config {
       name: string;
     };
   };
+  jwt: {
+    accessTokenSecret: string;
+    accessTokenExpireTime: number;
+    refreshTokenSecret: string;
+    refreshTokenExpireTime: number;
+    tokenIssuer: string;
+  };
+  redis: {
+    host: string;
+    port: number;
+    serverPort: number;
+    tokenExpireTime: number;
+    blacklistExpireTime: number;
+  };
   rate: {
     limit: number;
     max: number;
@@ -48,6 +62,32 @@ export const config: Config = {
       name: process.env.MONGOOSE_DBNAME || '',
     },
   },
+  jwt: {
+    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET || '',
+    accessTokenExpireTime: parseInt(
+      process.env.ACCESS_TOKEN_EXPIRE_TIME || '1',
+      10,
+    ), // access token takes hour
+    refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET || '',
+    refreshTokenExpireTime: parseInt(
+      process.env.REFRESH_TOKEN_EXPIRE_TIME || '7',
+      10,
+    ), // refresh token takes days
+    tokenIssuer: process.env.TOKEN_ISSUER || 'your-issuer',
+  },
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    serverPort: parseInt(process.env.REDIS_SERVER_PORT || '9079', 10),
+    tokenExpireTime: parseInt(
+      process.env.REDIS_TOKEN_EXPIRE_TIME || '31536000',
+      10,
+    ),
+    blacklistExpireTime: parseInt(
+      process.env.REDIS_BLACKLIST_EXPIRE_TIME || '2592000',
+      10,
+    ),
+  },
   rate: {
     limit: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
     max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
@@ -64,6 +104,12 @@ export const config: Config = {
         title: 'Password Reset OTP',
         description: 'Reset your password',
         message: 'Your OTP code for resetting your password is:',
+      },
+      ACCOUNT_VERIFICATION: {
+        code: 'ACCOUNT_VERIFICATION',
+        title: 'Account Verification OTP',
+        description: 'Verify your account',
+        message: 'Your OTP code for account verification is:',
       },
     },
   },

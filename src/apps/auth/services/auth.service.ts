@@ -7,7 +7,9 @@ import { ErrorResponse } from '../../../common/shared/utils';
 import { config } from '../../../core/config';
 import { IUserModel } from '../../users/models/mongoose';
 import { UserService } from '../../users/services';
-import MailServiceUtilities from '../../../common/shared/services/mail/mail.service.utility';
+import { OTPService } from '.';
+import { JwtService } from '../../../common/shared';
+
 class AuthService {
   async register(
     payload: any,
@@ -53,23 +55,40 @@ class AuthService {
     }
   }
 
-  /*
   async verifyAccount(
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const {email, code } = payload;
+      const { email, code } = payload;
       const userResponse = (await UserService.findOne({
-        email
-      })) as SuccessResponseType<IUserModel>
+        email,
+      })) as SuccessResponseType<IUserModel>;
 
-      if(!userResponse.success || !userResponse.document) {
+      if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
       }
 
       if (userResponse.document.verified) {
         return { success: true }; // If already verified, return success without further actions
       }
+
+      const validateOtpResponse = await OTPService.validate(
+        email,
+        code,
+        config.otp.purposes.ACCOUNT_VERIFICATION.code,
+      );
+
+      if (!validateOtpResponse.success) {
+        throw validateOtpResponse.error;
+      }
+
+      const verifyUserResponse = await UserService.markAsVerified(email);
+
+      if (!verifyUserResponse.success) {
+        throw verifyUserResponse.error;
+      }
+
+      return { success: true };
     } catch (error) {
       return {
         success: false,
@@ -83,7 +102,6 @@ class AuthService {
       };
     }
   }
-*/
 
   async login(
     payload: any,
@@ -103,7 +121,7 @@ class AuthService {
 
       const user = userResponse.document;
       const isValidPasswordResponse = (await UserService.isValidPassword(
-        user.id,
+        user.idNumber,
         password,
       )) as SuccessResponseType<{ isValid: boolean }>;
       if (
@@ -113,9 +131,30 @@ class AuthService {
         throw new ErrorResponse('UNAUTHORIZED', 'Invalid Credentials.');
       }
 
+      if (!user.verified) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
+
+      const refreshToken = await JwtService.signRefreshToken(
+        user.idNumber,
+        user.role,
+      );
+      const accessToken = await JwtService.signAccessToken(
+        user.idNumber,
+        user.role,
+      );
+
       return {
         success: true,
         document: {
+          token: { refreshToken, accessToken },
           user,
         },
       };
@@ -150,6 +189,28 @@ class AuthService {
 
       if (!getEmail) {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User doesnt have email.');
+      }
+
+      const user = userResponse.document;
+
+      if (!user.verified) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
+
+      const otpResponse = await OTPService.generate(
+        email,
+        config.otp.purposes.FORGOT_PASSWORD.code,
+      );
+
+      if (!otpResponse.success) {
+        throw otpResponse.error;
       }
 
       return {
@@ -206,6 +267,87 @@ class AuthService {
       }
 
       return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async logout(
+    accessToken: string,
+    refreshToken: string,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      if (!refreshToken || !accessToken) {
+        throw new ErrorResponse(
+          'BAD_REQUEST',
+          'Refresh and access token are required.',
+        );
+      }
+
+      const { idNumber: idNumnerFromRefresh } =
+        await JwtService.checkRefreshToken(refreshToken);
+      const { idNumber: idNumberFromAccess } =
+        await JwtService.checkAccessToken(accessToken);
+
+      if (idNumberFromAccess !== idNumnerFromRefresh) {
+        throw new ErrorResponse(
+          'UNAUTHORIZED',
+          'Access token does not match refresh token.',
+        );
+      }
+
+      // Blacklist the access token
+      await JwtService.blacklistToken(accessToken);
+
+      // Remove the refresh token from Redis
+      await JwtService.removeFromRedis(idNumnerFromRefresh);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async refresh(
+    refreshToken: string,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      if (!refreshToken) {
+        throw new ErrorResponse('BAD_REQUEST', 'Refresh token is required.');
+      }
+
+      const user = await JwtService.verifyRefreshToken(refreshToken);
+      const { idNumber, role } = user;
+      const accessToken = await JwtService.signAccessToken(idNumber, role);
+      const newRefreshToken = await JwtService.signRefreshToken(idNumber, role);
+
+      return {
+        success: true,
+        document: {
+          token: {
+            access: accessToken,
+            refresh: newRefreshToken,
+          },
+        },
+      };
     } catch (error) {
       return {
         success: false,

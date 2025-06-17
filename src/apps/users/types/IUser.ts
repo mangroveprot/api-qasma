@@ -1,10 +1,11 @@
 import {
+  Role,
   TOtherInfoCounselor,
   TOtherInfoStaff,
   TOtherInfoStudent,
 } from './index';
 
-export type TUserRole = 'counsellor' | 'staff' | 'student' | 'facil';
+export type TUserRole = (typeof Role)[keyof typeof Role];
 export type gender = 'male' | 'female' | 'other';
 
 export interface IUser {

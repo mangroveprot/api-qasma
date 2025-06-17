@@ -67,3 +67,12 @@ export const emailOrIdSchema = Joi.object({
   idNumber: Joi.string().trim().min(1).optional(),
   email: Joi.string().trim().email().optional(),
 }).or('idNumber', 'email');
+
+export const logoutSchema = Joi.object({
+  accessToken: Joi.string().required(),
+  refreshToken: Joi.string().required(),
+}).unknown(false);
+
+export const refreshSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+}).unknown(false);

@@ -1,18 +1,18 @@
 import { AsyncLocalStorage } from 'async_hooks';
 
-export class AsyncStrorageService {
-  private static instance: AsyncStrorageService;
+export class AsyncStorageService {
+  private static instance: AsyncStorageService;
   private storage: AsyncLocalStorage<Map<string, any>>;
 
   private constructor() {
     this.storage = new AsyncLocalStorage();
   }
 
-  public static getInstance(): AsyncStrorageService {
-    if (!AsyncStrorageService.instance) {
-      AsyncStrorageService.instance = new AsyncStrorageService();
+  public static getInstance(): AsyncStorageService {
+    if (!AsyncStorageService.instance) {
+      AsyncStorageService.instance = new AsyncStorageService();
     }
-    return AsyncStrorageService.instance;
+    return AsyncStorageService.instance;
   }
 
   public set(key: string, value: any) {
