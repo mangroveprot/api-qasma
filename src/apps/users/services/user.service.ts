@@ -2,7 +2,7 @@ import { Query } from 'mongoose';
 import { BaseService } from '../../../core/engine';
 import bycrypt from 'bcryptjs';
 import { IUserModel, UserModelMongoose } from '../models/mongoose';
-import UserStudentMongooseRepository from '../repositories/user-student.repo';
+import UserStudentMongooseRepository from '../repositories/user.repo';
 import {
   ErrorResponseType,
   SuccessResponseType,
@@ -54,7 +54,7 @@ class UserService extends BaseService<
   ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
     try {
       if (!idNumber) {
-        throw new ErrorResponse('BAD_REQUEST', 'ID Number us required.');
+        throw new ErrorResponse('BAD_REQUEST', 'ID Number is required.');
       }
 
       const user = (await this.findOne({

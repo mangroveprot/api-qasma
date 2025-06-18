@@ -126,6 +126,7 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
         }));
         searchQuery = { ...searchQuery, $or: searchConditions };
       }
+      console.log(searchQuery);
       const documents = await this.repository.findAll(
         searchQuery,
         {

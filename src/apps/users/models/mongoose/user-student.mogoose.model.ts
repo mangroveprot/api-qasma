@@ -6,8 +6,7 @@ import {
   IBaseModel,
 } from '../../../../core/engine';
 import { config } from '../../../../core/config';
-import { boolean } from 'joi';
-import { IUser } from '../../types/IUser';
+import { IUser } from '../../types';
 
 const USER_MODEL_NAME = 'User';
 

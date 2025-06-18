@@ -8,7 +8,6 @@ export const studentInfoSchema = Joi.object({
 
 export const counselorInfoSchema = Joi.object({
   specialization: Joi.string().required(),
-  availableDays: Joi.array().items(Joi.string()).required(),
   roomNumber: Joi.string().required(),
 });
 

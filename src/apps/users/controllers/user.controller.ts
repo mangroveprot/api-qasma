@@ -69,7 +69,6 @@ class UserController {
   ): Promise<void> {
     try {
       const idNumber: string = req.params.idNumber;
-      console.log({ idNumber });
       const response = await UserService.getProfile(idNumber);
 
       if (response.success) {

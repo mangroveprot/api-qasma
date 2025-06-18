@@ -1,1 +1,1 @@
-export { default as UserStudentMongoose } from './user-student.repo';
+export { default as UserStudentMongoose } from './user.repo';

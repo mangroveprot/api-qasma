@@ -1,8 +1,6 @@
 # 📄 Documentation
 
-- [`[POST] /api/auth/register`](#post-apiauthregister) => text(register an account)
-- [`[POST] /api/auth/login`](#post-apiauthlogin) => login an account
-- [`[GET] /api/user/`](#get-apiuser) => get all users
+- [`[POST] /api/auth/register`](#post-apiauthregister) => register an account
 
 ---
 
@@ -18,7 +16,7 @@ Registers a new user account by accepting user details and returning a confirmat
 
 The request body must be a JSON object containing the following fields:
 
-# UserStudentSchema Fields
+# UserSchema Fields
 
 - **idNumber**: `string` => required
 - **email**: `string` => required
@@ -38,34 +36,6 @@ The request body must be a JSON object containing the following fields:
 - **address**: `string` => not required
 - **contact_number**: `string` => required
 - **facebook**: `string` => not required
-
----
-
-## 💡 Notes
-
-- All required fields must be included to successfully create an account.
-- Passwords should comply with security best practices (e.g., minimum length, complexity).
-- The endpoint expects JSON format; content type must be set to `application/json`.
-
----
-
-### [POST] /api/auth/login
-
-# ▶️ Description
-
-    - No description
-
-- **idNumber**: `string` => required
-- **password**: `string` => required
-
----
-
----
-
-### [GET] /api/user/
-
-# ▶️ Description
-
-    - Default user is getuserall
+- **other_info**: `[object]` =>
 
 ---
