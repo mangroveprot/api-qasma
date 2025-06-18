@@ -37,6 +37,24 @@ class AuthController {
     }
   }
 
+  static async logout(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { accessToken, refreshToken } = req.body;
+      const response = await AuthService.logout(accessToken, refreshToken);
+      if (response.success) {
+        ApiResponse.success(res, response, 202);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
   static async forgotPassword(
     req: Request,
     res: Response,
@@ -63,6 +81,23 @@ class AuthController {
       const response = await AuthService.resetPassword(req.body);
       if (response.success) {
         ApiResponse.success(res, response, 200);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async refreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AuthService.refresh(req.body.refreshToken);
+      if (response.success) {
+        ApiResponse.success(res, response);
       } else {
         throw response;
       }

@@ -145,7 +145,7 @@ Certainly! Here's a **short, clean, and professional** version of your MongoDB s
 
 ## MongoDB Setup (Docker + Compass)
 
-# 1. Pull & Run MongoDB via Docker
+### 1. Pull & Run MongoDB via Docker
 
 ```bash
 docker pull mongo:latest
@@ -154,7 +154,7 @@ docker run --name mongodb -p 27020:27017 -d mongo
 
 - Maps container port `27017` to local port `27020`.
 
-# 2. Create Admin User
+### 2. Create Admin User
 
 ```bash
 docker exec -it mongodb mongosh
@@ -172,13 +172,13 @@ db.createUser({
 
 ## 3. Connect Using MongoDB Compass
 
-# Connection String:
+### Connection String:
 
 ```
 mongodb://root:password@localhost:27020/?authSource=admin
 ```
 
-# Or Fill Fields:
+### Or Fill Fields:
 
 - **Host**: `localhost`
 - **Port**: `27020`
@@ -190,7 +190,7 @@ Connect and you're ready to work.
 
 ---
 
-## ▶️ How to Start MongoDB Again (Same Container)
+### ▶️ How to Start MongoDB Again (Same Container)
 
 To start it again later:
 
@@ -202,7 +202,41 @@ That’s it — your data, user (`root`), and databases (like `qasma_db`) will s
 
 ---
 
-## 🔁 Check It’s Running
+### 🔁 Check It’s Running
+
+To verify:
+
+```bash
+docker ps
+```
+
+## Redis Setup (Docke)
+
+### 1. Pull & Run Redis via Docker
+
+```bash
+docker pull redis:latest
+docker run --name redis -p 6379:6379 -d redis
+```
+
+- Maps container port `6379` to local port `6379`.
+
+- **Host**: `localhost`
+- **Port**: `6379`
+
+Connect and you're ready to work.
+
+---
+
+### ▶️ How to Start Redis Again (Same Container)
+
+To start it again later:
+
+```bash
+docker start redis
+```
+
+### 🔁 Check It’s Running
 
 To verify:
 
