@@ -1,7 +1,5 @@
 import { plugin, Schema } from 'mongoose';
 import softDeletePlugin from './soft-delete.plugin';
-import { register } from 'module';
-import { object, string } from 'joi';
 
 type PluginFunction = (schema: Schema, options?: any) => void;
 type PluginWithOptions = [PluginFunction, object?];

@@ -1,2 +1,3 @@
 export * from './IAppointment';
-export * from './ISchedule';
+export * from './Status';
+export * from './CheckInStatus';

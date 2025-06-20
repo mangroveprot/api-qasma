@@ -1,4 +1,6 @@
+import moment from 'moment-timezone';
 import { Schema } from 'mongoose';
+import { config } from '../../../../config';
 
 const softDeletePlugin = (schema: Schema) => {
   const deletedAtField = 'deletedAt';
@@ -9,7 +11,7 @@ const softDeletePlugin = (schema: Schema) => {
   }
 
   schema.methods.softDelete = async function () {
-    this[deletedAtField] = new Date();
+    this[deletedAtField] = moment.tz(config.timeZone).toDate();
     await this.save();
   };
 

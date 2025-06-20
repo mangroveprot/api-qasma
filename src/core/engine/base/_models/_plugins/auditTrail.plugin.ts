@@ -1,13 +1,15 @@
 import { Schema } from 'mongoose';
+import moment from 'moment-timezone';
 import {
-  AsyncStrorageService,
+  AsyncStorageService,
   logger,
 } from '../../../../../common/shared/services';
+import { config } from '../../../../config';
 
 const auditTrailPlugin = (schema: Schema) => {
   schema.pre('save', function (next) {
     const currentUserId =
-      AsyncStrorageService.getInstance().get('currentUserId');
+      AsyncStorageService.getInstance().get('currentUserId');
 
     if (!currentUserId) {
       logger.warn(
@@ -25,8 +27,8 @@ const auditTrailPlugin = (schema: Schema) => {
 
   schema.methods.softDelete = function () {
     const currentUserId =
-      AsyncStrorageService.getInstance().get('currentUserId');
-    this.deletedAt = new Date();
+      AsyncStorageService.getInstance().get('currentUserId');
+    this.deletedAt = moment.tz(config.timeZone).toDate();
     this.deletedBy = currentUserId || null;
     return this.save();
   };

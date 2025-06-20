@@ -1,11 +1,14 @@
-export type TStatus = 'pending' | 'approved' | 'completed' | 'cancelled';
-export type TCheckInStatus = 'pending' | 'checked-in' | 'missed';
+import { Status, CheckInStatus } from './index';
+
+export type TCheckInStatus = (typeof CheckInStatus)[keyof typeof CheckInStatus];
+
+export type TStatus = (typeof Status)[keyof typeof Status];
 
 export interface IAppointment {
   appointmentId: string;
   studentId: string;
-  scheduleDate: string;
-  scheduleTime: string;
+  scheduledAt: Date;
+  scheduledEndAt: Date;
   appointmentCategory: string;
   appointmentType: string;
   description: string;
@@ -14,6 +17,14 @@ export interface IAppointment {
   checkInTime?: Date;
   staffId: string;
   counselorId?: string;
-  scheduleId?: string;
-  qrCodeData?: string;
+  qrCode?: {
+    token: string; // qr payload [assymetric_hased]
+    scannedById?: string; // scanned by who?
+    scannedAt?: Date;
+  };
+  cancellation?: {
+    cancelledById: string; // ID of the user who cancelled
+    reason: string;
+    cancelledAt: Date;
+  };
 }

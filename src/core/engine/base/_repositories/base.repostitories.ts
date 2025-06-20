@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   Model,
   Document,
@@ -5,6 +6,7 @@ import {
   UpdateQuery,
   QueryOptions,
 } from 'mongoose';
+import { config } from '../../../config';
 
 export class BaseRepository<T extends Document> {
   protected model: Model<T>;
@@ -61,7 +63,9 @@ export class BaseRepository<T extends Document> {
     if (softDelete) {
       return await this.update(
         query,
-        { $set: { deletedAt: new Date() } } as UpdateQuery<T>,
+        {
+          $set: { deletedAt: moment.tz(config.timeZone).toDate() },
+        } as UpdateQuery<T>,
         options,
         true,
       );
