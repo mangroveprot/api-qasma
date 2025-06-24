@@ -6,7 +6,7 @@ import {
   validate,
 } from '../../../common/shared';
 import { registerSchema } from '../../auth/validators/auth';
-import { Role } from '../types';
+import { Role } from '../types/user';
 
 const router = Router();
 

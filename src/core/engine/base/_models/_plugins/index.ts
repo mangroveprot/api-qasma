@@ -1,14 +1,26 @@
 import { plugin, Schema } from 'mongoose';
 import softDeletePlugin from './soft-delete.plugin';
-import { register } from 'module';
-import { object, string } from 'joi';
+import auditTrailPlugin from './auditTrail.plugin';
+import versioningPlugin from './versioning.plugin';
+import historyPlugin from './history.plugin';
+import indexPlugin from './index.plugin';
 
 type PluginFunction = (schema: Schema, options?: any) => void;
 type PluginWithOptions = [PluginFunction, object?];
 
 const PluginManager = {
   basePlugins: new Map<string, PluginWithOptions>([
+    ['auditTrail', [auditTrailPlugin as PluginFunction]],
+    ['versioning', [versioningPlugin as PluginFunction]],
     ['softDelete', [softDeletePlugin as PluginFunction]],
+    // ['history', [historyPlugin as PluginFunction]],
+    [
+      'index',
+      [
+        indexPlugin as PluginFunction,
+        { fields: { createdAt: 1, updatedAt: 1 } },
+      ],
+    ],
   ]),
 
   applyPlugins(

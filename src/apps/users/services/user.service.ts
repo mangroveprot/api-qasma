@@ -2,7 +2,7 @@ import { Query } from 'mongoose';
 import { BaseService } from '../../../core/engine';
 import bycrypt from 'bcryptjs';
 import { IUserModel, UserModelMongoose } from '../models/mongoose';
-import UserStudentMongooseRepository from '../repositories/user-student.repo';
+import UserStudentMongooseRepository from '../repositories/user.repo';
 import {
   ErrorResponseType,
   SuccessResponseType,
@@ -54,7 +54,7 @@ class UserService extends BaseService<
   ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
     try {
       if (!idNumber) {
-        throw new ErrorResponse('BAD_REQUEST', 'ID Number us required.');
+        throw new ErrorResponse('BAD_REQUEST', 'ID Number is required.');
       }
 
       const user = (await this.findOne({
@@ -84,6 +84,46 @@ class UserService extends BaseService<
           facebook: user.document.facebook,
           other_info: user.document.other_info,
         } as any, // add any to avoid type error, cause the password should not included
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async updateProfile(
+    idNumber: string,
+    payload: any,
+  ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
+    try {
+      const user = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!user.success || !user.document) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
+      }
+
+      const updateResponse = (await this.update(
+        { idNumber: idNumber },
+        { ...payload },
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!updateResponse.success) {
+        throw updateResponse.error;
+      }
+
+      return {
+        success: true,
+        document: updateResponse.document,
       };
     } catch (error) {
       return {

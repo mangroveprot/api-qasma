@@ -32,10 +32,10 @@ function createBaseSchema<T extends IBaseModel>(
     {
       ...definition,
       deletedAt: { type: Date, default: null },
-      deletedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
-      createdBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
-      updatedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
-      __version__: { type: Number, default: 0 },
+      deletedBy: { type: String, default: null },
+      createdBy: { type: String, default: null },
+      updatedBy: { type: String, default: null },
+      __version__: { type: String, default: 0 },
     },
     { timestamps: true },
   );

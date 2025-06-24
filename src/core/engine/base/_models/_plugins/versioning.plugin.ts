@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-interface IVersionDocument extends Document {
+interface IVersionedDocument extends Document {
   __version__: number;
 }
 
@@ -15,4 +15,28 @@ const versioningPlugin = (schema: Schema) => {
       update.$set.__version__ = (update.$set.__version__ || 0) + 1;
     }
   };
+
+  schema.pre<IVersionedDocument>('save', function (next) {
+    if (!this.isNew) {
+      this.__version__ += 1;
+    }
+    next();
+  });
+
+  schema.pre('updateOne', function (next) {
+    incrementVersion(this.getUpdate());
+    next();
+  });
+
+  schema.pre('updateMany', function (next) {
+    incrementVersion(this.getUpdate());
+    next();
+  });
+
+  schema.pre('findOneAndUpdate', function (next) {
+    incrementVersion(this.getUpdate());
+    next();
+  });
 };
+
+export default versioningPlugin;

@@ -63,7 +63,6 @@ class MailService {
         text,
         html: htmlContent,
       };
-      console.log(config.mail);
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {

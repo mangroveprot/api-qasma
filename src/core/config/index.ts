@@ -7,6 +7,8 @@ interface Config {
   runningProd: boolean;
   databaseType: string;
   port: number;
+  saltRounds: number;
+  timeZone: string;
   db: {
     mongoose: {
       uri: string;
@@ -56,6 +58,8 @@ export const config: Config = {
   runningProd: process.env.NODE_ENV === 'production',
   databaseType: process.env.DATABASE_TYPE || '',
   port: parseInt(process.env.PORT || '3000', 10),
+  saltRounds: parseInt(process.env.SALT_ROUNDS || '10', 10),
+  timeZone: process.env.TIME_ZONE || 'Asia/Manila',
   db: {
     mongoose: {
       uri: process.env.MONGO_URI || '',

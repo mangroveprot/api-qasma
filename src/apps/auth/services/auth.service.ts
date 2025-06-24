@@ -1,4 +1,3 @@
-import Mail from 'nodemailer/lib/mailer';
 import {
   ErrorResponseType,
   SuccessResponseType,
@@ -8,7 +7,12 @@ import { config } from '../../../core/config';
 import { IUserModel } from '../../users/models/mongoose';
 import { UserService } from '../../users/services';
 import { OTPService } from '.';
-import { JwtService } from '../../../common/shared';
+import {
+  AsyncStorageService,
+  JwtService,
+  RedisService,
+} from '../../../common/shared';
+import { IOTPModel } from '../types';
 
 class AuthService {
   async register(
@@ -35,10 +39,20 @@ class AuthService {
         throw createUserRes.error;
       }
 
+      const otpResponse = (await OTPService.generate(
+        email,
+        config.otp.purposes.ACCOUNT_VERIFICATION.code,
+      )) as SuccessResponseType<IOTPModel>;
+
+      if (!otpResponse.success || !otpResponse.document) {
+        throw otpResponse.error;
+      }
+
       return {
         success: true,
         document: {
           user: createUserRes.document,
+          otp: otpResponse.document,
         },
       };
     } catch (error) {
@@ -178,7 +192,7 @@ class AuthService {
     try {
       const { email, idNumber } = payload;
       const userResponse = (await UserService.findOne(
-        idNumber ? { idNumber } : { email }, // idk if this is good but u can use this instead : $or: [{ idNumber }, { email }],
+        idNumber ? { idNumber } : { email }, // idk if this is good but u can use this instead => $or: [{ idNumber }, { email }],
       )) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
@@ -230,6 +244,71 @@ class AuthService {
     }
   }
 
+  async editProfile(
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      console.log(payload);
+      const { idNumber, password, ...restPayload } = payload;
+      const userResponse = (await UserService.findOne({
+        idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse(
+          'UNAUTHORIZED',
+          'Invalid Credentials. ID number entered is not register',
+        );
+      }
+
+      const user = userResponse.document;
+
+      if (!user.verified) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
+
+      const isValidPasswordResponse = (await UserService.isValidPassword(
+        user.idNumber,
+        password,
+      )) as SuccessResponseType<{ isValid: boolean }>;
+      if (
+        !isValidPasswordResponse.success ||
+        !isValidPasswordResponse.document?.isValid
+      ) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
+      }
+
+      const updateProfileResponse = (await UserService.updateProfile(
+        user.idNumber,
+        restPayload,
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!updateProfileResponse.success) {
+        throw updateProfileResponse.error;
+      }
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
   async resetPassword(
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
@@ -251,11 +330,16 @@ class AuthService {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User doesnt have email.');
       }
 
-      //TODO: check if verified
+      if (!user.verified) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+      }
 
-      //TODO: check if active
-
-      //TODO: validate otp
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
 
       const updatePasswordResponse = await UserService.updatePassword(
         user.idNumber,
@@ -293,12 +377,12 @@ class AuthService {
         );
       }
 
-      const { idNumber: idNumnerFromRefresh } =
+      const { idNumber: idNumberFromRefresh } =
         await JwtService.checkRefreshToken(refreshToken);
       const { idNumber: idNumberFromAccess } =
         await JwtService.checkAccessToken(accessToken);
 
-      if (idNumberFromAccess !== idNumnerFromRefresh) {
+      if (idNumberFromAccess !== idNumberFromRefresh) {
         throw new ErrorResponse(
           'UNAUTHORIZED',
           'Access token does not match refresh token.',
@@ -306,10 +390,10 @@ class AuthService {
       }
 
       // Blacklist the access token
-      await JwtService.blacklistToken(accessToken);
+      await RedisService.setBlacklistedInRedis(accessToken);
 
       // Remove the refresh token from Redis
-      await JwtService.removeFromRedis(idNumnerFromRefresh);
+      await RedisService.removeFromRedis(idNumberFromRefresh);
 
       return { success: true };
     } catch (error) {

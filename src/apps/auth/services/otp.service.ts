@@ -6,6 +6,7 @@ import {
 import MailServiceUtilities from '../../../common/shared/services/mail/mail.service.utility';
 import { config } from '../../../core/config';
 import { BaseService } from '../../../core/engine';
+import { getDateTime } from '../../../helpers';
 import { generateRandomOTP } from '../../../helpers/generateRandomOTP';
 import { IUserModel, UserService } from '../../users';
 import { OTPModel } from '../models';
@@ -35,7 +36,7 @@ class OTPService extends BaseService<IOTPModel, OTPRepository> {
       await this.repository.invalidateOldCodes(user.idNumber, purpose);
       const otp = await this.repository.create({
         code: generateRandomOTP(config.otp.length),
-        expiresAt: new Date(Date.now() + config.otp.expiration),
+        expiresAt: new Date(getDateTime.toString() + config.otp.expiration),
         idNumber: user.idNumber,
         purpose,
       });
