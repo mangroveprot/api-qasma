@@ -7,7 +7,7 @@ export type TStatus = (typeof Status)[keyof typeof Status];
 export interface IAppointment {
   appointmentId: string;
   studentId: string;
-  scheduledAt: Date;
+  scheduledStartAt: Date;
   scheduledEndAt: Date;
   appointmentCategory: string;
   appointmentType: string;
@@ -15,10 +15,10 @@ export interface IAppointment {
   status: TStatus;
   checkInStatus: TCheckInStatus;
   checkInTime?: Date;
-  staffId: string;
+  staffId?: string;
   counselorId?: string;
   qrCode?: {
-    token: string; // qr payload [assymetric_hased]
+    token: string; //qr token
     scannedById?: string; // scanned by who?
     scannedAt?: Date;
   };

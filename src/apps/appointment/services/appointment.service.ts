@@ -1,4 +1,3 @@
-import { error } from 'winston';
 import {
   ErrorResponse,
   ErrorResponseType,
@@ -12,8 +11,7 @@ import AppointmentModel, {
 } from '../models/appointment.model';
 import { AppointmentRepository } from '../repositories';
 import { CheckInStatus, Status } from '../types';
-import moment from 'moment-timezone';
-import { config } from '../../../core/config';
+import { getDateTime } from '../../../helpers';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -95,7 +93,7 @@ class AppointmentService extends BaseService<
 
       const updateResponse = (await this.update(
         { appointmentId },
-        { restPayload },
+        { ...restPayload },
       )) as SuccessResponseType<IAppointmentModel>;
 
       if (!updateResponse.success) {
@@ -251,11 +249,11 @@ class AppointmentService extends BaseService<
       const updatePayload = {
         status: Status.Completed,
         checkInStatus: CheckInStatus.CheckIn,
-        checkInTime: moment.tz(config.timeZone).toDate(),
+        checkInTime: getDateTime,
         qrCode: {
           token: token,
           scannedById: payload.counselorId, // scanned by who?
-          scannedAt: moment.tz(config.timeZone).toDate(),
+          scannedAt: getDateTime,
         },
       };
 

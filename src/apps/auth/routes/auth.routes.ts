@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import AuthController from '../controllers/auth.controller';
-import { validate } from '../../../common/shared';
+import {
+  authenticateAndAttachUserContext,
+  validate,
+} from '../../../common/shared';
 import {
   emailOrIdSchema,
   loginSchema,
@@ -8,15 +11,29 @@ import {
   refreshSchema,
   registerSchema,
   resetPasswordSchema,
+  verifyAccountSchema,
 } from '../validators/auth';
 
 const router = Router();
 
 router.post('/register', validate(registerSchema), AuthController.register);
 
+router.post(
+  '/verify',
+  validate(verifyAccountSchema),
+  AuthController.verifyAccount,
+);
+
 router.post('/login', validate(loginSchema), AuthController.login);
 
-router.post(
+router.patch(
+  '/update',
+  authenticateAndAttachUserContext,
+  // validate(loginSchema),
+  AuthController.updateProfile,
+);
+
+router.patch(
   '/reset-password',
   validate(emailOrIdSchema, resetPasswordSchema),
   AuthController.resetPassword,

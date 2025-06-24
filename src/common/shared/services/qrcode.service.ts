@@ -4,6 +4,7 @@ import { logger } from './logger.service';
 import { config } from '../../../core/config';
 import { redis as redisInstance } from '../../../core/framework/databases/redis';
 import { stringifyObject } from '../../../helpers';
+import { RedisService } from './index';
 
 redisInstance.init();
 const client = redisInstance.getClient();
@@ -30,29 +31,14 @@ class QRCodeService {
 
   async verifyQRToken(payload: any, qrToken: string): Promise<any> {
     try {
-      // Check if the qr token is blacklisted
-      const result = await new Promise((resolve, reject) => {
-        if (!qrToken) {
-          reject(
-            new ErrorResponse(
-              'BAD_REQUEST',
-              'Missing QR token or no (payload).',
-            ),
-          );
-        }
-        client.get(`bl_${payload.appointmentId}`, (err: any, res: any) => {
-          if (err) {
-            logger.error(err.message, err);
-            return reject(
-              new ErrorResponse(
-                'INTERNAL_SERVER_ERROR',
-                'Internal Server Error',
-              ),
-            );
-          }
-          resolve(res);
-        });
-      });
+      if (!qrToken || !payload) {
+        throw new ErrorResponse(
+          'BAD_REQUEST',
+          'Missing QR token or (payload).',
+        );
+      }
+
+      const result = await RedisService.isBlacklistedInRedis(qrToken);
 
       if (result) {
         const errorResponse = new ErrorResponse(

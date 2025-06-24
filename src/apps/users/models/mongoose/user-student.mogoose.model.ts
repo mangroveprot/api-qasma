@@ -6,7 +6,7 @@ import {
   IBaseModel,
 } from '../../../../core/engine';
 import { config } from '../../../../core/config';
-import { IUser } from '../../types';
+import { IUser, Role } from '../../types';
 
 const USER_MODEL_NAME = 'User';
 
@@ -19,7 +19,7 @@ const UserSchema = createBaseSchema<IUserModel>(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['student', 'staff', 'counselor'],
+      enum: [...Object.values(Role)],
       required: true,
     },
     verified: { type: Boolean, default: false },

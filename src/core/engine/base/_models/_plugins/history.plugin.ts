@@ -1,6 +1,5 @@
 import { model, Schema, Document, Types } from 'mongoose';
-import { AsyncStrorageService } from '../../../../../common/shared/services/async-localstorage.service';
-import { object } from 'joi';
+import { AsyncStorageService } from '../../../../../common/shared/services/async-localstorage.service';
 
 interface IHistoryDocument extends Document {
   originalId: Types.ObjectId;
@@ -40,7 +39,7 @@ const historyPlugin = <T extends Document>(
     snapshot?: any,
   ) => {
     const currentUserId =
-      AsyncStrorageService.getInstance().get('currentUserId');
+      AsyncStorageService.getInstance().get('currentUserId');
 
     await new HisotryModel({
       originalId: doc._id,

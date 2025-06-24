@@ -99,6 +99,46 @@ class UserService extends BaseService<
     }
   }
 
+  async updateProfile(
+    idNumber: string,
+    payload: any,
+  ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
+    try {
+      const user = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!user.success || !user.document) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
+      }
+
+      const updateResponse = (await this.update(
+        { idNumber: idNumber },
+        { ...payload },
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!updateResponse.success) {
+        throw updateResponse.error;
+      }
+
+      return {
+        success: true,
+        document: updateResponse.document,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
   async updatePassword(
     idNumber: string,
     newPassword: string,

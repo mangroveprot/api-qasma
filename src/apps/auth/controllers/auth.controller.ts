@@ -20,6 +20,23 @@ class AuthController {
     }
   }
 
+  static async verifyAccount(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AuthService.verifyAccount(req.body);
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
   static async login(
     req: Request,
     res: Response,
@@ -96,6 +113,23 @@ class AuthController {
   ): Promise<void> {
     try {
       const response = await AuthService.refresh(req.body.refreshToken);
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async updateProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AuthService.editProfile(req.body);
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

@@ -1,5 +1,5 @@
 import { CallbackError, Document, modelNames, Schema } from 'mongoose';
-import { IAppointment } from '../types';
+import { CheckInStatus, IAppointment, Status } from '../types';
 import { BaseModel, createBaseSchema, IBaseModel } from '../../../core/engine';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,19 +16,19 @@ const AppointmentSchema = createBaseSchema<IAppointmentModel>(
       required: true,
     },
     studentId: { type: String, required: true },
-    scheduledAt: { type: Date, required: true },
+    scheduledStartAt: { type: Date, required: true },
     scheduledEndAt: { type: Date, required: true },
     appointmentCategory: { type: String, required: true },
     appointmentType: { type: String, required: true },
     description: { type: String, required: true },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'cancelled', 'completed'],
+      enum: [...Object.values(Status)],
       default: 'pending',
     },
     checkInStatus: {
       type: String,
-      enum: ['not-checked-in', 'checked-in', 'missed'],
+      enum: [...Object.values(CheckInStatus)],
       default: 'not-checked-in',
     },
     checkInTime: { type: Date },
@@ -47,7 +47,6 @@ const AppointmentSchema = createBaseSchema<IAppointmentModel>(
   },
   {
     modelName: APPOINTMENT_MODEL_NAME,
-    excludePlugins: ['softDeletePlugin', 'historyPlugin'],
   },
 );
 
