@@ -35,7 +35,7 @@ class AppointmentService extends BaseService<
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
           'NOT_FOUND_ERROR',
-          'The student ID is not registered..',
+          'The student ID was not found..',
         );
       }
 

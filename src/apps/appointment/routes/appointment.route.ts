@@ -19,24 +19,27 @@ router.post(
   '/create',
   authenticateAndAttachUserContext,
   validate(appointmentSchema),
+  authorizeRoles(Role.Student),
   AppointmentController.createAppointment,
 );
 router.get(
-  '/getAll',
+  '/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff),
   AppointmentController.getAllAppointments,
 );
 router.get('/getById/:appointmentId', AppointmentController.getAppointmentById);
-router.put(
+router.patch(
   '/update',
   authenticateAndAttachUserContext,
+  authorizeRoles(Role.Student, Role.Staff, Role.Counselor),
   validate(updateAppointmentSchema),
   AppointmentController.updateAppointment,
 );
 router.patch(
   '/cancel',
   authenticateAndAttachUserContext,
+  authorizeRoles(Role.Student, Role.Staff, Role.Counselor),
   validate(cancelAppointmentSchema),
   AppointmentController.cancelAppointment,
 );

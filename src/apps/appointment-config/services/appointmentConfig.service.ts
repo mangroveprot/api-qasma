@@ -25,6 +25,16 @@ class AppoinmentConfigService extends BaseService<
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
+      const getAllRepsonse =
+        (await this.findAll()) as SuccessResponseType<IAppointmentConfigModel>;
+
+      if (getAllRepsonse.success || getAllRepsonse.document) {
+        throw new ErrorResponse(
+          'FORBIDDEN_ERROR',
+          'Config has already been set. The new config is ignored',
+        );
+      }
+
       const createResponse = (await this.create(
         payload,
       )) as SuccessResponseType<IAppointmentConfigModel>;

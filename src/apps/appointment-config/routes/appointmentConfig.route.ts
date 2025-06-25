@@ -23,4 +23,10 @@ router.patch(
   authorizeRoles(Role.Counselor),
 );
 
+router.get(
+  '/',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor),
+);
+
 export default router;

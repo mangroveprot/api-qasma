@@ -48,11 +48,13 @@ class AuthService {
         throw otpResponse.error;
       }
 
+      const { code, ...restOtpResp } = otpResponse.document;
+
       return {
         success: true,
         document: {
           user: createUserRes.document,
-          otp: otpResponse.document,
+          otp: restOtpResp,
         },
       };
     } catch (error) {
@@ -339,6 +341,16 @@ class AuthService {
           'FORBIDDEN',
           'Inactive account, please contact admins.',
         );
+      }
+
+      const validateOtpResponse = await OTPService.validate(
+        email,
+        code,
+        config.otp.purposes.FORGOT_PASSWORD.code,
+      );
+
+      if (!validateOtpResponse.success) {
+        throw validateOtpResponse.error;
       }
 
       const updatePasswordResponse = await UserService.updatePassword(
