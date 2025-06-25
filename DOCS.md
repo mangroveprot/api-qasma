@@ -41,6 +41,13 @@
 
 ---
 
+## OTP
+
+- [`[POST] /api/otp/generate`](#post-apiotpgenerate) => create a new appointment configuration
+- [`[POST] /api/otp/validate`](#patch-apiotpvalidate) => update appointment configuration
+
+---
+
 ## `[POST]` /api/auth/register
 
 ### Description
@@ -738,8 +745,7 @@ GET /api/user/getUserById/60c72b2f9b1e8b1e2c3a4b5d
     },
     "createdAt": "2025-06-19T06:04:03.089Z",
     "updatedAt": "2025-06-24T05:20:20.233Z"
-  },
-  "error": null
+  }
 }
 ```
 
@@ -1405,18 +1411,11 @@ The response will contain the following:
     },
     "createdAt": "2025-06-20T08:00:00.000Z",
     "updatedAt": "2025-06-25T10:00:00.000Z"
-  },
-  "error": null
+  }
 }
 ```
 
 [Back to top ↑](#config)
-
----
-
-## `[GET]` /api/config/
-
-Here’s the structure for the `/api/config/` endpoint that allows **Counselors** to get all appointment configurations:
 
 ---
 
@@ -1451,4 +1450,72 @@ To fetch all the configurations:
 ```http
 GET /api/config/
 Authorization: Bearer your_access_token
+```
+
+## `[POST]` /api/otp/generate
+
+### Description
+
+Generates a One-Time Password (OTP) for the provided **idNumber** or **email** and a specified **purpose** (e.g., password reset, account verification). This operation is accessible to **everyone**. The OTP will also be sent to the registered email associated with the provided **idNumber** or **email**.
+
+### Request Payload
+
+The request body must be a JSON object containing the following fields:
+
+#### Fields
+
+- **idNumber**: `string` => optional (the unique ID number of the user, required if not using `email`)
+- **email**: `string` => optional (the email of the user, required if not using `idNumber`)
+- **purpose**: `string` => required (the purpose for which the OTP is being generated, e.g., `PASSWORD_RESER`, `ACCOUNT_VERIFICATION`) [`see it here`](./src/core/config/index.ts#otp)
+
+### Response
+
+The response will contain the following:
+
+- **success**: `boolean` => `true` if the OTP was successfully generated and sent, `false` otherwise
+- **otp**: `string` => the generated OTP, if successful
+- **message**: `string` => a message indicating that the OTP has been sent to the registered email
+- **error?**: `object` => optional field that provides error details if the OTP generation fails (e.g., invalid idNumber/email, unknown purpose)
+
+### Example Request
+
+```json
+{
+  "email": "user@example.com",
+  "purpose": "FORGOT_PASSWORD"
+}
+```
+
+## `[POST]` /api/otp/validate
+
+### Description
+
+Validates the One-Time Password (OTP) for the provided **email**, **code**, and **purpose** (e.g., password reset, account verification). This operation ensures that the OTP is correct and not expired.
+
+### Request Payload
+
+The request body must be a JSON object containing the following fields:
+
+#### Fields
+
+- **email**: `string` => required (the email of the user whose OTP is being validated)
+- **code**: `string` => required (the OTP code to validate)
+- **purpose**: `string` => required (the purpose for which the OTP was generated, e.g., `PASSWORD_RESET`)[`see it here`](./src/core/config/index.ts#otp)
+
+### Response
+
+The response will contain the following:
+
+- **success**: `boolean` => `true` if the OTP is valid, `false` otherwise
+- **message**: `string` => a message indicating whether the OTP was successfully validated or not
+- **error?**: `object` => optional field that provides error details if the validation fails (e.g., invalid OTP, expired OTP)
+
+### Example Request
+
+```json
+{
+  "email": "user@example.com",
+  "code": "123456",
+  "purpose": "PASSWORD_RESET"
+}
 ```
