@@ -44,7 +44,7 @@
 ## OTP
 
 - [`[POST] /api/otp/generate`](#post-apiotpgenerate) => create a new appointment configuration
-- [`[POST] /api/otp/validate`](#patch-apiotpvalidate) => update appointment configuration
+- [`[POST] /api/otp/validate`](#post-apiotpvalidate) => update appointment configuration
 
 ---
 
