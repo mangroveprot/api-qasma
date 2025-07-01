@@ -15,7 +15,6 @@ async function startServer() {
       console.log(`Server running on http://localhost:${config.port}/`);
     });
   } catch (error) {
-    //  console.error(error);
     logger.error('Failed to initialize services', error as any);
   }
 }

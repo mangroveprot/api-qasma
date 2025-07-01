@@ -26,8 +26,8 @@ interface Config {
     host: string;
     port: number;
     serverPort: number;
-    tokenExpireTime: number;
-    blacklistExpireTime: number;
+    tokenExpireTime: number; //15days
+    blacklistExpireTime: number; //30days
   };
   rate: {
     limit: number;

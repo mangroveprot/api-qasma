@@ -32,6 +32,7 @@ router.get(
   UserController.getUserProfile,
 );
 
+// TODO: Remove this
 router.get(
   '/getUserById/:uid',
   authenticateAndAttachUserContext,

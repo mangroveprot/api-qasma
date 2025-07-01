@@ -1,6 +1,5 @@
 import { IOTPModel } from '../types';
 import { config } from '../../../core/config';
-import { Schema } from 'mongoose';
 import { BaseModel, createBaseSchema } from '../../../core/engine';
 import { attemptLimitingPlugin } from './_plugins';
 

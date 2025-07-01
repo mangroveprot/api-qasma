@@ -20,14 +20,28 @@ class AuthService {
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
       const { email, idNumber } = payload;
-      const userResponse = (await UserService.findOne({
-        $or: [{ idNumber }, { email }],
-      })) as SuccessResponseType<IUserModel>;
 
-      if (userResponse.success || userResponse.document) {
+      const [idResponse, emailResponse] = (await Promise.all([
+        UserService.findOne({ idNumber }),
+        UserService.findOne({ email }),
+      ])) as [SuccessResponseType<IUserModel>, SuccessResponseType<IUserModel>];
+
+      const isExist = (() => {
+        const id = idResponse.success || !!idResponse.document;
+        const email = emailResponse.success || !!emailResponse.document;
+
+        let message = '';
+        if (id && email) message = 'id number and email';
+        else if (id) message = 'id';
+        else if (email) message = 'email';
+
+        return { id, email, message };
+      })();
+
+      if (isExist.id || isExist.email) {
         throw new ErrorResponse(
           'UNIQUE_FIELD_ERROR',
-          'The entered email or id number is already registered.',
+          `The entered ${isExist.message} is already registered.`,
         );
       }
 
@@ -48,11 +62,13 @@ class AuthService {
         throw otpResponse.error;
       }
 
+      const { code, ...restOtp } = otpResponse.document.toObject();
+
       return {
         success: true,
         document: {
           user: createUserRes.document,
-          otp: otpResponse.document,
+          otp: restOtp,
         },
       };
     } catch (error) {
@@ -248,7 +264,6 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      console.log(payload);
       const { idNumber, password, ...restPayload } = payload;
       const userResponse = (await UserService.findOne({
         idNumber,
@@ -339,6 +354,16 @@ class AuthService {
           'FORBIDDEN',
           'Inactive account, please contact admins.',
         );
+      }
+
+      const validateOtpResponse = await OTPService.validate(
+        email,
+        code,
+        config.otp.purposes.FORGOT_PASSWORD.code,
+      );
+
+      if (!validateOtpResponse.success) {
+        throw validateOtpResponse.error;
       }
 
       const updatePasswordResponse = await UserService.updatePassword(

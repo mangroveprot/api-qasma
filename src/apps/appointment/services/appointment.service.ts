@@ -5,13 +5,21 @@ import {
   SuccessResponseType,
 } from '../../../common/shared';
 import { BaseService } from '../../../core/engine';
-import { IUserModel, UserService } from '../../users';
+import { IUserModel, Role, UserService } from '../../users';
 import AppointmentModel, {
   IAppointmentModel,
 } from '../models/appointment.model';
 import { AppointmentRepository } from '../repositories';
 import { CheckInStatus, Status } from '../types';
-import { getDateTime } from '../../../helpers';
+import {
+  generateAppointmentSlots,
+  getDateTime,
+  mergedCounselorsUnavailableTimes,
+  UnavailableTimes,
+} from '../../../helpers';
+import { AppoinmentConfigService } from '../../appointment-config/services';
+import { IAppointmentConfig } from '../../appointment-config/types';
+import moment from 'moment';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -35,7 +43,7 @@ class AppointmentService extends BaseService<
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
           'NOT_FOUND_ERROR',
-          'The student ID is not registered..',
+          'The student ID was not found..',
         );
       }
 
@@ -270,6 +278,82 @@ class AppointmentService extends BaseService<
         success: true,
         document: updateResponse.document,
       };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async generateAppointmentSlots(
+    duration: string,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      const appointmentDuration: number = Number(duration);
+
+      // get all config, all counselors, and appointments
+      // TODO: Optimized - cached this instead
+      const [appointmentConfigRes, counselorRes, appointmentRes] =
+        await Promise.all([
+          AppoinmentConfigService.findOne({}),
+          UserService.findAll({ query: { role: Role.Counselor } }),
+          this.findAll(),
+        ]);
+
+      const counselors =
+        (counselorRes as SuccessResponseType<any>).documents || [];
+
+      const appointments =
+        (appointmentRes as SuccessResponseType<IAppointmentModel>).documents ||
+        [];
+
+      const appointmentConfig = (
+        appointmentConfigRes as SuccessResponseType<IAppointmentConfig>
+      ).document;
+
+      if (!counselors) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'No counselor is currently assigned. Please contact the administrator.',
+        );
+      }
+
+      if (!appointmentConfig) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'Missing appoinment config, maybe its empty.',
+        );
+      }
+
+      const allUnavailable: UnavailableTimes[] = counselors.map(
+        (counselor) => counselor.other_info.unavailableTimes,
+      );
+
+      // get the current and upcoming appointments and also must be approved or pending
+      const upcomingAppointments = appointments.filter((appointment) => {
+        const scheduledAt = moment(appointment.scheduledStartAt);
+        const isStatusValid =
+          appointment.status === Status.Approved ||
+          appointment.status === Status.Pending;
+
+        return isStatusValid && scheduledAt.isSameOrAfter(getDateTime);
+      });
+
+      const mergedAllCounselorTime =
+        mergedCounselorsUnavailableTimes(allUnavailable);
+
+      const getAvailableSlots = generateAppointmentSlots({
+        unavailableTimes: mergedAllCounselorTime,
+        appointmentDuration: appointmentDuration,
+        existingAppointments: upcomingAppointments,
+        appointmentConfig: appointmentConfig,
+      });
+
+      return { success: true, document: getAvailableSlots };
     } catch (error) {
       return {
         success: false,

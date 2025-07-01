@@ -14,13 +14,17 @@ export const authenticateAndAttachUserContext = (
     // @ts-ignore: Suppress TS error for non-existent property
     const payload = req.payload;
 
-    if (payload && typeof payload.aud === 'string') {
+    if (
+      payload &&
+      typeof payload.aud === 'string' &&
+      typeof payload.role === 'string'
+    ) {
       const idNumber = payload.aud;
       const role = payload.role;
       const asyncStorage = AsyncStorageService.getInstance();
 
       asyncStorage.run(() => {
-        asyncStorage.set('currentUserId', { idNumber, role });
+        asyncStorage.set('currentUser', { idNumber, role });
         next();
       });
     } else {
