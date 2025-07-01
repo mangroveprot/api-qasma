@@ -28,6 +28,12 @@ router.get(
   authorizeRoles(Role.Counselor, Role.Staff),
   AppointmentController.getAllAppointments,
 );
+router.get(
+  '/slots/:duration',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  AppointmentController.getSlots,
+);
 router.get('/getById/:appointmentId', AppointmentController.getAppointmentById);
 router.patch(
   '/update',

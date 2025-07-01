@@ -6,17 +6,16 @@ export type TOtherInfoCounselor = {
       end: string;
     }[];
   };
-  roomNumber: string;
 };
 
 // Example usage:
 
 // unavailableTimes: {
-//   Monday: [
-//     { start: "08:00", end: "09:00" },
-//     { start: "15:00", end: "16:00" }
-//   ],
-//   Wednesday: [
-//     { start: "13:00", end: "14:30" }
-//   ]
+// Monday: [
+//   { start: "08:00", end: "09:00" },
+//   { start: "15:00", end: "16:00" }
+// ],
+// Wednesday: [
+//   { start: "13:00", end: "14:30" }
+// ]
 // }

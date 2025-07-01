@@ -27,10 +27,11 @@ class AppoinmentConfigService extends BaseService<
     try {
       const getAllRepsonse =
         (await this.findAll()) as SuccessResponseType<IAppointmentConfigModel>;
+      console.log(getAllRepsonse.documents);
 
-      if (getAllRepsonse.success || getAllRepsonse.document) {
+      if (getAllRepsonse.results) {
         throw new ErrorResponse(
-          'FORBIDDEN_ERROR',
+          'FORBIDDEN',
           'Config has already been set. The new config is ignored',
         );
       }
@@ -82,7 +83,7 @@ class AppoinmentConfigService extends BaseService<
 
       const updateResponse = (await this.update(
         { configId },
-        { ...restPayload },
+        { restPayload },
       )) as SuccessResponseType<IAppointmentConfigModel>;
 
       if (!updateResponse.success) {

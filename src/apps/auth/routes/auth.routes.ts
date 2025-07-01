@@ -2,6 +2,7 @@ import { Router } from 'express';
 import AuthController from '../controllers/auth.controller';
 import {
   authenticateAndAttachUserContext,
+  attachUserToContext,
   validate,
 } from '../../../common/shared';
 import {
@@ -16,10 +17,16 @@ import {
 
 const router = Router();
 
-router.post('/register', validate(registerSchema), AuthController.register);
+router.post(
+  '/register',
+  attachUserToContext,
+  validate(registerSchema),
+  AuthController.register,
+);
 
 router.post(
   '/verify',
+  attachUserToContext,
   validate(verifyAccountSchema),
   AuthController.verifyAccount,
 );
@@ -29,7 +36,7 @@ router.post('/login', validate(loginSchema), AuthController.login);
 router.patch(
   '/update',
   authenticateAndAttachUserContext,
-  // validate(loginSchema),
+  // validate(loginSchema), // TODO: Add update schemas
   AuthController.updateProfile,
 );
 

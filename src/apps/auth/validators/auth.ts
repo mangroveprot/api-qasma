@@ -9,7 +9,17 @@ export const studentInfoSchema = Joi.object({
 
 export const counselorInfoSchema = Joi.object({
   specialization: Joi.string().required(),
-  roomNumber: Joi.string().required(),
+  unavailableTimes: Joi.object()
+    .pattern(
+      Joi.string(),
+      Joi.array().items(
+        Joi.object({
+          start: Joi.string().required(),
+          end: Joi.string().required(),
+        }),
+      ),
+    )
+    .optional(),
 });
 
 export const staffInfoSchema = Joi.object({
@@ -31,22 +41,14 @@ export const registerSchema = Joi.object({
   contact_number: Joi.string().required(),
   address: Joi.string().optional().allow('', null),
   facebook: Joi.string().optional().allow('', null),
-  other_info: Joi.object()
-    .when('role', {
-      is: Role.Student,
-      then: studentInfoSchema.required(),
-      otherwise: Joi.forbidden(),
-    })
-    .when('role', {
-      is: Role.Counselor,
-      then: counselorInfoSchema.required(),
-      otherwise: Joi.forbidden(),
-    })
-    .when('role', {
-      is: Role.Staff,
-      then: staffInfoSchema.required(),
-      otherwise: Joi.forbidden(),
-    }),
+  other_info: Joi.alternatives().conditional('role', {
+    switch: [
+      { is: Role.Student, then: studentInfoSchema.required() },
+      { is: Role.Counselor, then: counselorInfoSchema.required() },
+      { is: Role.Staff, then: staffInfoSchema.required() },
+    ],
+    otherwise: Joi.forbidden(),
+  }),
 }).unknown(false);
 
 export const verifyAccountSchema = Joi.object({

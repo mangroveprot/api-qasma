@@ -20,8 +20,8 @@ router.post(
 
 router.get(
   '/',
-  // authenticateAndAttachUserContext,
-  // authorizeRoles(Role.Counselor, Role.Staff),
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff),
   UserController.getAllUsers,
 );
 
@@ -32,6 +32,7 @@ router.get(
   UserController.getUserProfile,
 );
 
+// TODO: Remove this
 router.get(
   '/getUserById/:uid',
   authenticateAndAttachUserContext,

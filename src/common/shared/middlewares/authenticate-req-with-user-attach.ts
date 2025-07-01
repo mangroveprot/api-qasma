@@ -24,7 +24,7 @@ export const authenticateAndAttachUserContext = (
       const asyncStorage = AsyncStorageService.getInstance();
 
       asyncStorage.run(() => {
-        asyncStorage.set('currentUserId', { idNumber, role });
+        asyncStorage.set('currentUser', { idNumber, role });
         next();
       });
     } else {

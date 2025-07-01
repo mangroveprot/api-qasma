@@ -36,7 +36,7 @@ class OTPService extends BaseService<IOTPModel, OTPRepository> {
       await this.repository.invalidateOldCodes(user.idNumber, purpose);
       const otp = await this.repository.create({
         code: generateRandomOTP(config.otp.length),
-        expiresAt: new Date(getDateTime.toString() + config.otp.expiration),
+        expiresAt: new Date(getDateTime.getTime() + config.otp.expiration),
         idNumber: user.idNumber,
         purpose,
       });

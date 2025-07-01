@@ -1017,8 +1017,6 @@ Authorization: Bearer your_access_token
 }
 ```
 
-Here’s the updated version for the `/api/appointment/update` endpoint, reflecting that most fields are optional except for the appointment ID:
-
 ---
 
 ## `[PATCH]` /api/appointment/update

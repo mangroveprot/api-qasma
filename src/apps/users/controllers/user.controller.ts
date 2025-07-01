@@ -13,6 +13,7 @@ class UserController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      // TODO: Check for validation
       const response = await UserService.create(req.body);
       if (response.success) {
         ApiResponse.success(res, response, 201);
@@ -41,6 +42,7 @@ class UserController {
     }
   }
 
+  //TODO: Remove this
   static async getUserById(
     req: Request,
     res: Response,

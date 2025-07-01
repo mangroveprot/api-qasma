@@ -58,3 +58,5 @@ class AppointmentConfigController {
     }
   }
 }
+
+export default AppointmentConfigController;

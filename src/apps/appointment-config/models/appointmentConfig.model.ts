@@ -10,6 +10,14 @@ export interface IAppointmentConfigModel
     IBaseModel,
     Document {}
 
+const categoryTypeSchema = new Schema(
+  {
+    type: { type: String, required: true },
+    duration: { type: Number, required: true },
+  },
+  { _id: false },
+);
+
 const AppointmentConfigSchema = createBaseSchema<IAppointmentConfigModel>(
   {
     configId: {
@@ -19,11 +27,32 @@ const AppointmentConfigSchema = createBaseSchema<IAppointmentConfigModel>(
       required: true,
     },
     session_duration: { type: Number, required: true },
-    bufferTime: { type: Number, required: true },
+    buffer_time: { type: Number, required: true },
+    booking_lead_time: { type: Number, required: true },
+    slot_days_range: { type: Number, required: true },
     reminders: { type: [String], required: true },
-    categoryAndType: {
+    available_day_time: {
       type: Map,
-      of: [String],
+      of: [
+        {
+          _id: false,
+          start: {
+            type: String,
+            required: true,
+            match: /^([01]\d|2[0-3]):([0-5]\d)$/, // HH:mm
+          },
+          end: {
+            type: String,
+            required: true,
+            match: /^([01]\d|2[0-3]):([0-5]\d)$/, // HH:mm
+          },
+        },
+      ],
+      required: false,
+    },
+    category_and_type: {
+      type: Map,
+      of: [categoryTypeSchema],
       required: true,
     },
   },

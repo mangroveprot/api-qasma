@@ -38,8 +38,7 @@ const historyPlugin = <T extends Document>(
     changes: Record<string, any> = {},
     snapshot?: any,
   ) => {
-    const currentUserId =
-      AsyncStorageService.getInstance().get('currentUserId');
+    const currentUser = AsyncStorageService.getInstance().get('currentUser');
 
     await new HisotryModel({
       originalId: doc._id,
@@ -47,7 +46,7 @@ const historyPlugin = <T extends Document>(
       snapshot,
       modelName: options.modelName,
       action,
-      modifiedBy: currentUserId,
+      modifiedBy: currentUser.id,
     }).save();
   };
 
