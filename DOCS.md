@@ -25,6 +25,7 @@
 
 - [`[POST] /api/appointment/create`](#post-apiappointmentcreate) => create an appointment
 - [`[GET] /api/appointment/`](#get-apiappointment) => get all appointments
+- [`[GET] /api/appointment/slots/:duration`](#get-apiappointmentslotsduration) => get available slots
 - [`[GET] /api/appointment/getById/:appointmentId`](#get-apiappointmentgetbyidappointmentid) => get appointment by ID
 - [`[PATCH] /api/appointment/update`](#patch-apiappointmentupdate) => update an appointment
 - [`[PATCH] /api/appointment/cancel`](#patch-apiappointmentcancel) => cancel an appointment
@@ -37,7 +38,7 @@
 
 - [`[POST] /api/config/create`](#post-apiconfigcreate) => create a new appointment configuration
 - [`[PATCH] /api/config/update`](#patch-apiconfigupdate) => update appointment configuration
-- [`[GET] /api/config/`](#patch-apiconfig) => get all appointment configuration
+- [`[GET] /api/config/`](#get-apiconfig) => get all appointment configuration
 
 ---
 
@@ -962,6 +963,65 @@ NOTE: to make work the `searchTerm`, you must allowed a certain fields like this
 
 ---
 
+## `[GET]` /api/appointment/slots/\:duration
+
+### Description
+
+Generates and retrieves available appointment time slots based on the provided session `duration`. The available slots are computed using the current date, appointment configuration, counselor availability, and existing appointments.
+
+This endpoint is typically used by students to view available appointment times before booking.
+
+### Authorization
+
+This endpoint requires a **Bearer Token** in the request header. The token should be provided as follows:
+
+```http
+Authorization: Bearer {accessToken}
+```
+
+The **accessToken** must be valid. This endpoint is usually accessible to users with the **Student** role.
+
+### Request Parameters
+
+- **duration**: `number` (in minutes) => required in the **URL path**. This defines the intended duration of the appointment session, used to calculate time slots (e.g., `60` for a 1-hour session).
+
+### Query Parameters
+
+_None_
+
+### Response
+
+The response will contain the following:
+
+- **success**: `boolean` => `true` if the slot generation was successful, `false` otherwise
+- **document**: `object` => A key-value pair of `date: string[]`, where the key is the formatted date (e.g., `"2025-07-01"`) and the value is an array of available time ranges for that day (e.g., `["09:00 - 10:00", "10:00 - 11:00"]`)
+- **error?**: `object` => optional field that provides error details if the request fails (e.g., invalid duration, missing configuration)
+
+### Example Request
+
+To fetch available 1-hour appointment slots:
+
+```http
+GET /api/appointment/slots/60
+Authorization: Bearer your_access_token
+```
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "slots": {
+    "2025-07-01": ["09:00 - 10:00", "10:15 - 11:15", "13:00 - 14:00"],
+    "2025-07-02": ["09:00 - 10:00", "10:15 - 11:15", "13:00 - 14:00"]
+  }
+}
+```
+
+[Back to top ↑](#appointment)
+
+---
+
 ## `[GET]` /api/appointment/getById/\:appointmentId
 
 ### Description
@@ -1016,6 +1076,8 @@ Authorization: Bearer your_access_token
   }
 }
 ```
+
+[Back to top ↑](#appointment)
 
 ---
 
@@ -1293,47 +1355,159 @@ The response will contain the following:
 
 ### Description
 
-Creates a new appointment configuration. This operation is **restricted** to **Counselor** roles and ensures that only one configuration exists. If a configuration already exists, it will return a **forbidden** response and require an update instead.
+Creates a new appointment configuration for the system. This operation is **restricted to Counselor users only**. The system allows only one configuration at a time — if one already exists, the request will be **forbidden** and must be updated via a separate endpoint instead.
 
 ### Authorization
 
-This endpoint requires a **Bearer Token** in the request header. The token should be provided as follows:
+This endpoint requires a **Bearer Token** in the request header:
 
 ```http
 Authorization: Bearer {accessToken}
 ```
 
-The `accessToken` must correspond to a **Counselor** role. If the role is anything other than `Counselor`, the request will be forbidden.
+The token must belong to a user with the **Counselor** role. Users with other roles will receive a **403 Forbidden** response.
+
+---
 
 ### Request Payload
 
-The request body must be a JSON object containing the following fields:
+The request body must be a JSON object with the following fields:
 
 #### Fields
 
-- **session_duration**: `number` => required (the duration of each appointment session in minutes)
-- **bufferTime**: `number` => required (the buffer time between appointments in minutes)
-- **reminders**: `array` => required (an array of reminder times in minutes before the appointment starts, e.g., `[15, 30]` for reminders 15 and 30 minutes before)
-- **categoryAndType**: `object` => required (a map of appointment categories and types, where keys are categories and values are arrays of appointment types)
+- **session_duration**: `number` – required
+  The default duration (in minutes) for appointment sessions (used as fallback if type-specific duration is not provided).
 
-### Response
+- **buffer_time**: `number` – required
+  Time in minutes between consecutive appointment slots.
 
-The response will contain the following:
+- **booking_lead_time**: `number` – required
+  Minimum lead time (in minutes) required before a user can book an appointment (e.g., 120 = 2 hours before).
 
-- **success**: `boolean` => `true` if the configuration was successfully created, `false` otherwise
-- **document**: `object` => contains the create config details
-- **error?**: `object` => optional field that provides error details if the creation fails (e.g., forbidden access, existing configuration)
+- **slot_days_range**: `number` – required
+  The number of days ahead (starting from today) for which available appointment slots will be generated.
+
+- **reminders**: `string[]` – required
+  A list of reminder messages to be sent before appointments.
+
+- **available_day_time**: `object` – required
+  A mapping of weekdays (`Monday` to `Friday`) to an array of working sessions per day. Each session has a `start` and `end` time in `HH:mm` format.
+
+- **category_and_type**: `object` – required
+  A mapping of categories (e.g., `"Counseling"`, `"Interview"`) to an array of type objects. Each type object must contain:
+
+  - **type**: `string` – the specific appointment type
+  - **duration**: `number` – the specific session duration in minutes for this type
+
+---
 
 ### Example Request
 
 ```json
 {
   "session_duration": 30,
-  "bufferTime": 15,
-  "reminders": ["15", "30"],
-  "categoryAndType": {
-    "Academic": ["Consultation", "Advising"],
-    "Career": ["Counseling", "Guidance"]
+  "buffer_time": 10,
+  "booking_lead_time": 120,
+  "slot_days_range": 7,
+  "reminders": [
+    "Reminder: Your appointment is in 30 minutes",
+    "Reminder: Bring your ID"
+  ],
+  "available_day_time": {
+    "Monday": [
+      { "start": "09:00", "end": "12:00" },
+      { "start": "13:00", "end": "17:00" }
+    ],
+    "Tuesday": [
+      { "start": "09:00", "end": "12:00" },
+      { "start": "13:00", "end": "17:00" }
+    ],
+    "Wednesday": [
+      { "start": "09:00", "end": "12:00" },
+      { "start": "13:00", "end": "17:00" }
+    ],
+    "Thursday": [
+      { "start": "09:00", "end": "12:00" },
+      { "start": "13:00", "end": "17:00" }
+    ],
+    "Friday": [
+      { "start": "09:00", "end": "12:00" },
+      { "start": "13:00", "end": "17:00" }
+    ]
+  },
+  "category_and_type": {
+    "Counseling": [
+      { "type": "Academic", "duration": 30 },
+      { "type": "Career", "duration": 45 },
+      { "type": "Personal", "duration": 60 }
+    ],
+    "Interview": [
+      { "type": "Scholarship", "duration": 30 },
+      { "type": "Graduation Exit Interview", "duration": 20 }
+    ]
+  }
+}
+```
+
+---
+
+### Response
+
+- **success**: `boolean` – `true` if configuration was created successfully, `false` otherwise
+- **document**: `object` – contains the full configuration that was created
+- **error?**: `object` – optional. Contains error details if creation fails (e.g., configuration already exists, forbidden access)
+
+---
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "document": {
+    "session_duration": 30,
+    "buffer_time": 10,
+    "booking_lead_time": 120,
+    "slot_days_range": 7,
+    "reminders": [
+      "Reminder: Your appointment is in 30 minutes",
+      "Reminder: Bring your ID"
+    ],
+    "available_day_time": {
+      "Monday": [
+        { "start": "09:00", "end": "12:00" },
+        { "start": "13:00", "end": "17:00" }
+      ],
+      "Tuesday": [
+        { "start": "09:00", "end": "12:00" },
+        { "start": "13:00", "end": "17:00" }
+      ],
+      "Wednesday": [
+        { "start": "09:00", "end": "12:00" },
+        { "start": "13:00", "end": "17:00" }
+      ],
+      "Thursday": [
+        { "start": "09:00", "end": "12:00" },
+        { "start": "13:00", "end": "17:00" }
+      ],
+      "Friday": [
+        { "start": "09:00", "end": "12:00" },
+        { "start": "13:00", "end": "17:00" }
+      ]
+    },
+    "category_and_type": {
+      "Counseling": [
+        { "type": "Academic", "duration": 30 },
+        { "type": "Career", "duration": 45 },
+        { "type": "Personal", "duration": 60 }
+      ],
+      "Interview": [
+        { "type": "Scholarship", "duration": 30 },
+        { "type": "Graduation Exit Interview", "duration": 20 }
+      ]
+    },
+    "createdAt": "2025-07-01T09:00:00.000Z",
+    "updatedAt": "2025-07-01T09:00:00.000Z"
   }
 }
 ```
@@ -1450,6 +1624,10 @@ GET /api/config/
 Authorization: Bearer your_access_token
 ```
 
+[Back to top ↑](#config)
+
+---
+
 ## `[POST]` /api/otp/generate
 
 ### Description
@@ -1484,6 +1662,10 @@ The response will contain the following:
 }
 ```
 
+[Back to top ↑](#otp)
+
+---
+
 ## `[POST]` /api/otp/validate
 
 ### Description
@@ -1517,3 +1699,7 @@ The response will contain the following:
   "purpose": "PASSWORD_RESET"
 }
 ```
+
+[Back to top ↑](#otp)
+
+---
