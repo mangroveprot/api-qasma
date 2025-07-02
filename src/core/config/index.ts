@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
-const envFile =
-  process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod';
+
+// const envFile =
+//   process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod';
+// dotenv.config({ path: envFile });
+const envFile = process.env.NODE_ENV === 'development' ? '.env' : '../.env';
 dotenv.config({ path: envFile });
 
 interface Config {
@@ -62,8 +65,8 @@ export const config: Config = {
   timeZone: process.env.TIME_ZONE || 'Asia/Manila',
   db: {
     mongoose: {
-      uri: process.env.MONGO_URI || '',
-      name: process.env.MONGOOSE_DBNAME || '',
+      uri: process.env.DB_URI || '',
+      name: process.env.DB_NAME || '',
     },
   },
   jwt: {
