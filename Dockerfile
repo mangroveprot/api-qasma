@@ -1,5 +1,5 @@
 # Use an official Node.js base image
-FROM node:22-alpine as development
+FROM node:22-alpine AS development
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -13,10 +13,10 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# Build the TypeScript project
+# DEBUG: Run build and list output
 RUN npm run build
 
-FROM node:16-alpine as production
+FROM node:16-alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -29,4 +29,4 @@ RUN npm ci --only=production
 
 COPY --from=development /usr/src/app/build ./build
 
-CMD ["node", "build/server.js"]
+CMD ["npm", "start"]

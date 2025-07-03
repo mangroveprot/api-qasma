@@ -13,8 +13,7 @@ services:
       - redis
       - maildev
     volumes:
-      - ./:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/usr/src/app
     command: npm run start:dev
   mongo:
     image: mongo:latest

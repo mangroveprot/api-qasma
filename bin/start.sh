@@ -34,7 +34,7 @@ fi
 
 # Run the install script
 echo "🔄 Running install.sh..."
-bash "$PROJECT_ROOT/bin/install.sh"
+bash "$PROJECT_ROOT/bin/install.sh" "$ENVIRONMENT"
 
 # Build the base docker-compose command
 DOCKER_COMPOSE_ARGS="--env-file $PROJECT_ROOT/.env"

@@ -1,32 +1,45 @@
 #!/bin/bash
 
-# Path to the project root directory
+# Get project root directory
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Path to the .env file
+# Read the environment argument (default to 'development' if not passed)
+ENVIRONMENT=${1:-development}
+
+# Main .env file used by Docker
 ENV_FILE="$PROJECT_ROOT/.env"
 
-# Path to the .env.example file
+# Source file based on environment
+ENV_SOURCE_FILE="$PROJECT_ROOT/.env.$ENVIRONMENT"
+
+# Fallback example file
 ENV_EXAMPLE_FILE="$PROJECT_ROOT/.env.example"
 
-echo "🔄 Checking for .env file..."
+echo "🔄 Setting up .env file for environment: $ENVIRONMENT"
 
-# Check if the .env file exists
+# Check if .env.{env} exists; if not, create it from .env.example
+if [ ! -f "$ENV_SOURCE_FILE" ]; then
+    if [ -f "$ENV_EXAMPLE_FILE" ]; then
+        cp "$ENV_EXAMPLE_FILE" "$ENV_SOURCE_FILE"
+        echo "⚠️  $ENV_SOURCE_FILE not found. Created from .env.example."
+    else
+        echo "❌ Neither $ENV_SOURCE_FILE nor .env.example found. Cannot proceed."
+        exit 1
+    fi
+fi
+
+# Warn about replacing .env
 if [ -f "$ENV_FILE" ]; then
-    echo "⚠️  .env file already exists. It will be replaced with .env.example."
+    echo "⚠️  .env already exists. It will be replaced with $ENV_SOURCE_FILE."
 else
-    echo "✅ .env file does not exist. It will be created from .env.example."
+    echo "✅ .env file does not exist. It will be created from $ENV_SOURCE_FILE."
 fi
 
-# Always replace the .env file with .env.example
-if [ -f "$ENV_EXAMPLE_FILE" ]; then
-    cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
-    echo "✅ .env file created/replaced from .env.example."
-else
-    echo "❌ .env.example file not found. Cannot create .env file."
-    exit 1
-fi
+# Copy .env.{env} to .env
+cp "$ENV_SOURCE_FILE" "$ENV_FILE"
+echo "✅ .env file created from $ENV_SOURCE_FILE."
 
+# Install dependencies
 echo "🔄 Installing npm dependencies..."
-npm install
+(cd "$PROJECT_ROOT" && npm install)
 echo "✅ npm dependencies installed."
