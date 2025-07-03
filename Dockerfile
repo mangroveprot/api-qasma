@@ -1,11 +1,11 @@
 # Use an official Node.js base image
-FROM node:22-alpine
+FROM node:22-alpine as development
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
 # Copy the package.json and package-lock.json
-COPY package*.json ./
+COPY package*.json .
 
 # Install application dependencies
 RUN npm install
@@ -16,8 +16,17 @@ COPY . .
 # Build the TypeScript project
 RUN npm run build
 
-# Expose the application port
-EXPOSE $PORT
+FROM node:16-alpine as production
 
-# Define the command to run based on the environment
-CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"production\" ]; then npm run start:prod; else npm start; fi"]
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+COPY package*.json .
+
+RUN npm ci --only=production
+
+COPY --from=development /usr/src/app/build ./build
+
+CMD ["node", "build/server.js"]

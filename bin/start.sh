@@ -36,12 +36,18 @@ fi
 echo "🔄 Running install.sh..."
 bash "$PROJECT_ROOT/bin/install.sh"
 
-# Inject NODE_ENV into .env file
-echo "NODE_ENV=$ENVIRONMENT" >> "$PROJECT_ROOT/.env"
-echo ""
-echo "🔄 NODE_ENV set to $ENVIRONMENT in .env file."
+# Build the base docker-compose command
+DOCKER_COMPOSE_ARGS="--env-file $PROJECT_ROOT/.env"
 
-# Start the Docker containers
+# Use custom compose file only if in development mode
+if [ "$ENVIRONMENT" = "development" ]; then
+  COMPOSE_FILE="-f docker-compose.dev.yml"
+else
+  COMPOSE_FILE=""
+fi
+
+# Start the containers
 echo "🔄 Starting Docker containers in $ENVIRONMENT mode..."
-$DOCKER_COMPOSE_CMD up --build
+echo "🔄 Targetting $COMPOSE_FILE"
+$DOCKER_COMPOSE_CMD $COMPOSE_FILE $DOCKER_COMPOSE_ARGS up --build
 echo "✅ Docker containers started."
