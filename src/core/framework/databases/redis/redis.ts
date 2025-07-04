@@ -7,6 +7,7 @@ function init(): void {
   redisClient = new Redis({
     port: config.redis.port,
     host: config.redis.host,
+    password: config.redis.password,
     maxRetriesPerRequest: 5,
     connectTimeout: 5000,
     retryStrategy: (times) => {

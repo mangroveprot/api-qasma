@@ -27,6 +27,7 @@ interface Config {
   redis: {
     host: string;
     port: number;
+    password: string;
     serverPort: number;
     tokenExpireTime: number; //15days
     blacklistExpireTime: number; //30days
@@ -82,8 +83,16 @@ export const config: Config = {
     tokenIssuer: process.env.TOKEN_ISSUER || 'your-issuer',
   },
   redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    host:
+      process.env.NODE_ENV === 'production'
+        ? process.env.REDIS_CLOUD_HOST || ''
+        : process.env.REDIS_HOST || 'localhost',
+    port: parseInt(
+      process.env.NODE_ENV === 'production'
+        ? process.env.REDIS_CLOUD_PORT || '587'
+        : process.env.REDIS_PORT || '1025',
+    ),
+    password: process.env.REDIS_PASSWORD || '',
     serverPort: parseInt(process.env.REDIS_SERVER_PORT || '9079', 10),
     tokenExpireTime: parseInt(
       process.env.REDIS_TOKEN_EXPIRE_TIME || '31536000',

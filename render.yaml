@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: qasma-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    build:
+      docker:
+        target: production
