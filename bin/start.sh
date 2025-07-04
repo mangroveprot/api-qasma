@@ -1,18 +1,53 @@
 #!/bin/bash
 
-# Function to check if container exists
-container_exists() {
-  docker ps -a --format '{{.Names}}' | grep -q "^$1$"
-}
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# If containers exist, start them via Docker Compose
-if container_exists "mongodb" || container_exists "redis"; then
-  echo "🟢 Starting existing containers with Docker Compose..."
-else
-  echo "🆕 Creating containers with Docker Compose..."
+ENVIRONMENT="development"
+
+if [ "$1" == "--prod" ]; then
+  ENVIRONMENT="production"
 fi
 
-# Start the entire Docker Compose setup (all services and volumes)
-docker compose up -d
+echo "🔄 Checking for Docker installation..."
 
-echo "🚀 MongoDB and Redis are ready."
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker could not be found. Please install Docker and try again."
+    exit 1
+fi
+
+echo "✅ Docker is installed."
+
+echo "🔄 Checking for Docker Compose installation..."
+
+# Check if Docker Compose is installed and determine which command to use
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+    echo "✅ Docker Compose (standalone) is installed."
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+    echo "✅ Docker Compose (plugin) is installed."
+else
+    echo "❌ Docker Compose could not be found. Please install Docker Compose and try again."
+    exit 1
+fi
+
+# Run the install script
+echo "🔄 Running install.sh..."
+bash "$PROJECT_ROOT/bin/install.sh" "$ENVIRONMENT"
+
+# Build the base docker-compose command
+DOCKER_COMPOSE_ARGS="--env-file $PROJECT_ROOT/.env"
+
+# Use custom compose file only if in development mode
+if [ "$ENVIRONMENT" = "development" ]; then
+  COMPOSE_FILE="-f docker-compose.dev.yml"
+else
+  COMPOSE_FILE=""
+fi
+
+# Start the containers
+echo "🔄 Starting Docker containers in $ENVIRONMENT mode..."
+echo "🔄 Targetting $COMPOSE_FILE"
+$DOCKER_COMPOSE_CMD $COMPOSE_FILE $DOCKER_COMPOSE_ARGS up --build
+echo "✅ Docker containers started."

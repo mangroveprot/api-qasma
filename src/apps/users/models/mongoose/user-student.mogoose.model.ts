@@ -1,5 +1,5 @@
 import { CallbackError, Document, modelNames, Schema } from 'mongoose';
-import bycrypt from 'bcrypt';
+import bycrypt from 'bcryptjs';
 import {
   BaseModel,
   createBaseSchema,
