@@ -29,4 +29,4 @@ RUN npm ci --only=production
 
 COPY --from=development /usr/src/app/build ./build
 
-CMD ["npm", "start"]
+CMD ["node", "build/server.js"]
