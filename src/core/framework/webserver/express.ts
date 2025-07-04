@@ -8,6 +8,7 @@ import morgan from 'morgan';
 
 import { config } from '../../config';
 import { default as AllRoutes } from '../../../common/global-router';
+import { default as DefaultRoutes } from '../../../common/global-router/default';
 import { apiRateLimiter } from '../../../common/shared/middlewares';
 import {
   GlobalErrorHandler,
@@ -30,10 +31,7 @@ app.use(express.json());
 app.use(apiRateLimiter);
 
 //API routes
-app.use('/', (req, res) => {
-  res.send('Welcome to the API!!!!');
-});
-
+app.use('/', DefaultRoutes);
 app.use('/api', AllRoutes);
 
 // error handler
