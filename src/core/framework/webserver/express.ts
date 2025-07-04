@@ -30,6 +30,10 @@ app.use(express.json());
 app.use(apiRateLimiter);
 
 //API routes
+app.use('/', (req, res) => {
+  res.send('Welcome to the API!!!!');
+});
+
 app.use('/api', AllRoutes);
 
 // error handler
