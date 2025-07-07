@@ -491,6 +491,6 @@ You can see it [here](DOCS.md).
 
 Contributions, issues, and feature requests are welcome!
 
-Feel free to check the [issues page](https://github.com/fless-lab/node-ts-starter/issues) if you want to contribute.
+Feel free to check the [issues page](https://github.com/mangroveprot/api-qasma/issues) if you want to contribute.
 
 Don't forget to give a star if you find this project useful! ⭐
