@@ -16,7 +16,7 @@ import { Role } from '../../users';
 const router = Router();
 
 router.post(
-  '/create',
+  '/',
   authenticateAndAttachUserContext,
   validate(appointmentSchema),
   authorizeRoles(Role.Student),

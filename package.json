@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "build/server.js",
   "scripts": {
-    "start:dev": "ts-node-dev --poll src/server.ts",
-    "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/server.js"
+    "start:dev": "npx ts-node-dev --poll src/server.ts",
+    "build": "rimraf ./build && npx tsc && npm run copy-files",
+    "start": "npx run build && node build/server.js",
+    "copy-files": "copyfiles -u 1 src/**/*.html build/"
   },
   "keywords": [],
   "author": "",
@@ -24,9 +25,11 @@
     "@types/morgan": "^1.9.9",
     "@types/nodemailer": "^6.4.17",
     "@types/qs": "^6.14.0",
+    "copyfiles": "^2.4.1",
     "fs": "^0.0.1-security",
     "nodemon": "^3.1.9",
     "path": "^0.12.7",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^1.1.8",
     "typescript": "^5.8.2",
@@ -39,6 +42,7 @@
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
     "handlebars": "^4.7.8",
@@ -51,9 +55,7 @@
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.3",
-    "rimraf": "^3.0.2",
     "uuid": "^11.1.0",
-    "winston": "^3.17.0",
-    "dotenv": "^16.6.1"
+    "winston": "^3.17.0"
   }
 }
