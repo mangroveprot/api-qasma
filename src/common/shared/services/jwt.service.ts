@@ -171,7 +171,7 @@ class JwtService {
           if (err) {
             const errorResponse = new ErrorResponse(
               'UNAUTHORIZED',
-              'Unauthorized',
+              'token expired',
             );
             return reject(errorResponse);
           }

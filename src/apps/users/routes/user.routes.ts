@@ -32,13 +32,7 @@ router.get(
   UserController.getUserProfile,
 );
 
-// TODO: Remove this
-router.get(
-  '/getUserById/:uid',
-  authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff),
-  UserController.getUserById,
-);
+router.get('/isRegister/:identifier', UserController.isRegister);
 
 router.get(
   '/current',

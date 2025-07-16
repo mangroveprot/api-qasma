@@ -50,6 +50,49 @@ class UserService extends BaseService<
     }
   }
 
+  async isRegistered(
+    identifier?: string | undefined,
+  ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
+    try {
+      if (!identifier) {
+        throw new ErrorResponse(
+          'BAD_REQUEST',
+          'ID Number or email is required.',
+        );
+      }
+
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+
+      const query = isEmail ? { email: identifier } : { idNumber: identifier };
+
+      const user = (await this.findOne({
+        query,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (user.success || user.document) {
+        throw new ErrorResponse(
+          'UNAUTHORIZED',
+          `This ${isEmail ? 'email' : 'ID number'} is already registered.`,
+        );
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
   async getProfile(
     idNumber?: string | undefined,
   ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {

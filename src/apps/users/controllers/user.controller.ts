@@ -42,17 +42,14 @@ class UserController {
     }
   }
 
-  //TODO: Remove this
-  static async getUserById(
+  static async isRegister(
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      const userId = req.params.uid;
-      const response = await UserService.findOne({
-        _id: userId,
-      });
+      const identifier: string = req.params.identifier;
+      const response = await UserService.getProfile(identifier);
 
       if (response.success) {
         ApiResponse.success(res, response);
