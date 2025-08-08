@@ -49,7 +49,7 @@ class UserController {
   ): Promise<void> {
     try {
       const identifier: string = req.params.identifier;
-      const response = await UserService.getProfile(identifier);
+      const response = await UserService.isRegistered(identifier);
 
       if (response.success) {
         ApiResponse.success(res, response);

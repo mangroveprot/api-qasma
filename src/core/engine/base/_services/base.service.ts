@@ -108,6 +108,7 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
     searchTerm = '',
     paginate = true,
     includeDeleted = false,
+    lastSynced,
   }: {
     query?: Record<string, any>;
     sort?: Record<string, any>;
@@ -116,9 +117,15 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
     searchTerm?: string;
     paginate?: boolean;
     includeDeleted?: boolean;
+    lastSynced?: string;
   } = {}): Promise<SuccessResponseType<T> | ErrorResponseType> {
     try {
       let searchQuery = this.filterQueryFields(query);
+
+      if (lastSynced) {
+        searchQuery.updatedAt = { $gt: new Date(lastSynced) };
+      }
+
       if (searchTerm && this.searchFields?.length) {
         const regex = new RegExp(escapeRegex(searchTerm), 'i');
         const searchConditions = this.searchFields.map((field) => ({

@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 import { config } from '../core/config';
 
-export const getDateTime = moment.tz(config.timeZone).toDate();
+export const getDateTime = () => moment.tz(config.timeZone).toDate();
 
 export const formatDate = (date: Date | string): string => {
   return moment(date).format('YYYY-MM-DD');

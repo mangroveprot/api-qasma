@@ -32,7 +32,7 @@ export function generateAppointmentSlots({
   appointmentConfig: IAppointmentConfig;
 }): any {
   const slots: Record<string, string[]> = {};
-  const now = getDateTime;
+  const now = getDateTime();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const bufferTime = appointmentConfig.buffer_time;
   const workingHours: WorkingHours = Object.fromEntries(

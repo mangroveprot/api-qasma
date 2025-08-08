@@ -144,8 +144,8 @@ class AuthService {
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
-          'UNAUTHORIZED',
-          'Invalid Credentials. ID number entered is not register',
+          'NOT_FOUND_ERROR',
+          'This ID number is not register.',
         );
       }
 
@@ -158,11 +158,11 @@ class AuthService {
         !isValidPasswordResponse.success ||
         !isValidPasswordResponse.document?.isValid
       ) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Invalid Credentials.');
+        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
       }
 
       if (!user.verified) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+        throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
       }
 
       if (!user.active) {
@@ -235,7 +235,7 @@ class AuthService {
       }
 
       const otpResponse = await OTPService.generate(
-        email,
+        getEmail,
         config.otp.purposes.FORGOT_PASSWORD.code,
       );
 
@@ -243,8 +243,11 @@ class AuthService {
         throw otpResponse.error;
       }
 
+      const { password, ...rest } = userResponse.document.toObject();
+
       return {
         success: true,
+        document: rest,
       };
     } catch (error) {
       return {
@@ -272,7 +275,7 @@ class AuthService {
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
           'UNAUTHORIZED',
-          'Invalid Credentials. ID number entered is not register',
+          'ID number entered is not register',
         );
       }
 
@@ -328,7 +331,7 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const { idNumber, email, code, newPassword } = payload;
+      const { idNumber, email, newPassword } = payload;
 
       const userResponse = (await UserService.findOne(
         idNumber ? { idNumber } : { email },
@@ -354,16 +357,6 @@ class AuthService {
           'FORBIDDEN',
           'Inactive account, please contact admins.',
         );
-      }
-
-      const validateOtpResponse = await OTPService.validate(
-        email,
-        code,
-        config.otp.purposes.FORGOT_PASSWORD.code,
-      );
-
-      if (!validateOtpResponse.success) {
-        throw validateOtpResponse.error;
       }
 
       const updatePasswordResponse = await UserService.updatePassword(

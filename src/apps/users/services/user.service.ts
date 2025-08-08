@@ -17,7 +17,7 @@ class UserService extends BaseService<
   constructor() {
     const userRepo = new UserStudentMongooseRepository(UserModelMongoose);
     super(userRepo);
-    this.allowedFilterFields = ['role'];
+    this.allowedFilterFields = ['role', 'email'];
   }
 
   async isValidPassword(
@@ -66,10 +66,10 @@ class UserService extends BaseService<
       const query = isEmail ? { email: identifier } : { idNumber: identifier };
 
       const user = (await this.findOne({
-        query,
+        ...query,
       })) as SuccessResponseType<IUserModel>;
 
-      if (user.success || user.document) {
+      if (user.success) {
         throw new ErrorResponse(
           'UNAUTHORIZED',
           `This ${isEmail ? 'email' : 'ID number'} is already registered.`,

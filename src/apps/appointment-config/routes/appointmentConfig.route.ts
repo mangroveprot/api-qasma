@@ -29,8 +29,15 @@ router.patch(
 router.get(
   '/',
   authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor),
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AppointmentConfigController.getAllConfig,
+);
+
+router.get(
+  '/sync/:lastSynced',
+  // authenticateAndAttachUserContext,
+  // authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  AppointmentConfigController.sync,
 );
 
 export default router;

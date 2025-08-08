@@ -4,7 +4,7 @@ import { Role } from '../../users/types/';
 export const studentInfoSchema = Joi.object({
   course: Joi.string().required(),
   yearLevel: Joi.number().integer().required(),
-  section: Joi.string().required(),
+  block: Joi.string().required(),
 });
 
 export const counselorInfoSchema = Joi.object({
@@ -36,7 +36,7 @@ export const registerSchema = Joi.object({
   middle_name: Joi.string().optional().allow('', null),
   last_name: Joi.string().required(),
   suffix: Joi.string().optional().allow('', null),
-  gender: Joi.string().valid('male', 'female', 'other').required(),
+  gender: Joi.string().lowercase().valid('male', 'female', 'other').required(),
   date_of_birth: Joi.date().required(),
   contact_number: Joi.string().required(),
   address: Joi.string().optional().allow('', null),
@@ -66,7 +66,6 @@ export const verifyEmailSchema = Joi.object({
 }).unknown(false);
 
 export const resetPasswordSchema = Joi.object({
-  code: Joi.string().min(6).required(),
   newPassword: Joi.string().min(8).required(),
 })
   .or('idNumber', 'email')

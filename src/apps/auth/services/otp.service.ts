@@ -33,13 +33,16 @@ class OTPService extends BaseService<IOTPModel, OTPRepository> {
       }
 
       const user = userResponse.document;
+
       await this.repository.invalidateOldCodes(user.idNumber, purpose);
+
       const otp = await this.repository.create({
         code: generateRandomOTP(config.otp.length),
-        expiresAt: new Date(getDateTime.getTime() + config.otp.expiration),
+        expiresAt: new Date(getDateTime().getTime() + config.otp.expiration),
         idNumber: user.idNumber,
         purpose,
       });
+
       const mailResponse = await MailServiceUtilities.sendOtpWithTemplate({
         to: user.email,
         code: otp.code,

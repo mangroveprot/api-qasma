@@ -19,21 +19,38 @@ router.post(
   '/',
   authenticateAndAttachUserContext,
   validate(appointmentSchema),
-  authorizeRoles(Role.Student),
+  authorizeRoles(Role.Student, Role.Staff, Role.Counselor),
   AppointmentController.createAppointment,
 );
+
+router.get(
+  '/getAllByUser/:studentId',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Student),
+  AppointmentController.getAllAppointmentByUser,
+);
+
 router.get(
   '/',
   authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff),
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AppointmentController.getAllAppointments,
 );
+
+router.get(
+  '/sync/:lastSynced/:idNumber?',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  AppointmentController.sync,
+);
+
 router.get(
   '/slots/:duration',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AppointmentController.getSlots,
 );
+
 router.get('/getById/:appointmentId', AppointmentController.getAppointmentById);
 router.patch(
   '/update',
@@ -42,6 +59,7 @@ router.patch(
   validate(updateAppointmentSchema),
   AppointmentController.updateAppointment,
 );
+
 router.patch(
   '/cancel',
   authenticateAndAttachUserContext,

@@ -28,7 +28,7 @@ class AppointmentService extends BaseService<
   constructor() {
     const appointmentRepo = new AppointmentRepository(AppointmentModel);
     super(appointmentRepo);
-    this.allowedFilterFields = ['status']; // for safety searching
+    this.allowedFilterFields = ['status', 'updatedAt', 'studentId']; // for safety searching
   }
 
   async createAppointment(
@@ -257,11 +257,11 @@ class AppointmentService extends BaseService<
       const updatePayload = {
         status: Status.Completed,
         checkInStatus: CheckInStatus.CheckIn,
-        checkInTime: getDateTime,
+        checkInTime: getDateTime(),
         qrCode: {
           token: token,
           scannedById: payload.counselorId, // scanned by who?
-          scannedAt: getDateTime,
+          scannedAt: getDateTime(),
         },
       };
 
@@ -340,7 +340,7 @@ class AppointmentService extends BaseService<
           appointment.status === Status.Approved ||
           appointment.status === Status.Pending;
 
-        return isStatusValid && scheduledAt.isSameOrAfter(getDateTime);
+        return isStatusValid && scheduledAt.isSameOrAfter(getDateTime());
       });
 
       const mergedAllCounselorTime =

@@ -26,7 +26,28 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await AppointmentService.findAll(req.body);
+      const response = await AppointmentService.findAll(req.query);
+      if (response.success) {
+        ApiResponse.success(res, response, 201);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async sync(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { lastSynced, idNumber } = req.params;
+      const response = await AppointmentService.findAll({
+        query: { studentId: idNumber },
+        lastSynced: lastSynced,
+      });
       if (response.success) {
         ApiResponse.success(res, response, 201);
       } else {
@@ -47,6 +68,29 @@ class AppointmentController {
       const response = await AppointmentService.findOne({
         appoinmentId: appoinmentId,
       });
+
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async getAllAppointmentByUser(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { studentId } = req.params;
+      const response = await AppointmentService.findAll({
+        query: { studentId },
+      });
+
+      console.log(response);
 
       if (response.success) {
         ApiResponse.success(res, response);

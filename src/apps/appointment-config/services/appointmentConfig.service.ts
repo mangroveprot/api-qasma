@@ -64,6 +64,47 @@ class AppoinmentConfigService extends BaseService<
     }
   }
 
+  async categoryAndType(): Promise<
+    SuccessResponseType<any> | ErrorResponseType
+  > {
+    let categoryAndType;
+    try {
+      const result =
+        (await this.findAll()) as SuccessResponseType<IAppointmentConfigModel>;
+
+      console.log(result);
+
+      if (!result.documents?.length) {
+        throw new ErrorResponse(
+          'NOT_FOUND',
+          'It looks like no configuration has been set up yet. Please reach out to the admin to create one.',
+        );
+      }
+
+      const config = result.documents;
+
+      if (Array.isArray(config) && config.length > 0) {
+        categoryAndType = config[0].category_and_type;
+      }
+
+      return {
+        success: true,
+        document: categoryAndType,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
   async updateAppointmentConfig(
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
@@ -93,6 +134,38 @@ class AppoinmentConfigService extends BaseService<
       return {
         success: true,
         document: updateResponse.document,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async synConfig(
+    lastSynced: string,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      const response = (await this.findAll({
+        lastSynced,
+      })) as SuccessResponseType<any>;
+
+      if (!response?.success || !Array.isArray(response.documents)) {
+        throw new ErrorResponse(
+          'NOT_FOUND',
+          'No configuration data found. Please ensure it exists.',
+        );
+      }
+
+      const firstData = response.documents[0];
+
+      return {
+        success: true,
+        document: firstData,
       };
     } catch (error) {
       return {
