@@ -41,4 +41,11 @@ router.get(
   UserController.getCurrentUser,
 );
 
+router.get(
+  '/sync/:lastSynced/:idNumber?',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  UserController.sync,
+);
+
 export default router;

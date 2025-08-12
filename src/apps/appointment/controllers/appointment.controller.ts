@@ -90,8 +90,6 @@ class AppointmentController {
         query: { studentId },
       });
 
-      console.log(response);
-
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

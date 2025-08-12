@@ -8,7 +8,6 @@ export const studentInfoSchema = Joi.object({
 });
 
 export const counselorInfoSchema = Joi.object({
-  specialization: Joi.string().required(),
   unavailableTimes: Joi.object()
     .pattern(
       Joi.string(),
@@ -20,11 +19,6 @@ export const counselorInfoSchema = Joi.object({
       ),
     )
     .optional(),
-});
-
-export const staffInfoSchema = Joi.object({
-  department: Joi.string().required(),
-  position: Joi.string().required(),
 });
 
 export const registerSchema = Joi.object({
@@ -45,7 +39,7 @@ export const registerSchema = Joi.object({
     switch: [
       { is: Role.Student, then: studentInfoSchema.required() },
       { is: Role.Counselor, then: counselorInfoSchema.required() },
-      { is: Role.Staff, then: staffInfoSchema.required() },
+      { is: Role.Staff, then: Joi.object({}).optional().allow(null) },
     ],
     otherwise: Joi.forbidden(),
   }),
@@ -81,6 +75,12 @@ export const emailOrIdSchema = Joi.object({
 export const logoutSchema = Joi.object({
   accessToken: Joi.string().required(),
   refreshToken: Joi.string().required(),
+}).unknown(false);
+
+export const changePasswordSchema = Joi.object({
+  idNumber: Joi.string().required(),
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().required(),
 }).unknown(false);
 
 export const refreshSchema = Joi.object({

@@ -17,7 +17,7 @@ class UserService extends BaseService<
   constructor() {
     const userRepo = new UserStudentMongooseRepository(UserModelMongoose);
     super(userRepo);
-    this.allowedFilterFields = ['role', 'email'];
+    this.allowedFilterFields = ['role', 'email', 'idNumber'];
   }
 
   async isValidPassword(

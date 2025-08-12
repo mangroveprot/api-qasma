@@ -139,17 +139,9 @@ class AppointmentService extends BaseService<
         );
       }
 
-      if (newPayload.status !== Status.Cancelled) {
-        throw new ErrorResponse(
-          'BAD_REQUEST',
-          'The request payload is invalid.',
-          ['Status must be cancelled.'],
-        );
-      }
-
       const updateResponse = (await this.update(
         { appointmentId },
-        { ...newPayload },
+        { ...newPayload, status: Status.Cancelled },
       )) as SuccessResponseType<IAppointmentModel>;
 
       if (!updateResponse.success) {

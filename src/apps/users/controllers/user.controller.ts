@@ -98,6 +98,27 @@ class UserController {
       ApiResponse.error(res, error as ErrorResponseType);
     }
   }
+
+  static async sync(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { lastSynced, idNumber } = req.params;
+      const response = await UserService.findAll({
+        query: { idNumber: idNumber },
+        lastSynced: lastSynced,
+      });
+      if (response.success) {
+        ApiResponse.success(res, response, 201);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
 }
 
 export default UserController;

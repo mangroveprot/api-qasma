@@ -6,6 +6,7 @@ import {
   validate,
 } from '../../../common/shared';
 import {
+  acceptAppointmentSchema,
   appointmentSchema,
   cancelAppointmentSchema,
   updateAppointmentSchema,
@@ -71,7 +72,7 @@ router.put(
   '/accept',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Staff),
-  validate(updateAppointmentSchema),
+  validate(acceptAppointmentSchema),
   AppointmentController.acceptAppointment,
 );
 router.put(

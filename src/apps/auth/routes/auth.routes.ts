@@ -6,6 +6,7 @@ import {
   validate,
 } from '../../../common/shared';
 import {
+  changePasswordSchema,
   emailOrIdSchema,
   loginSchema,
   logoutSchema,
@@ -34,7 +35,7 @@ router.post(
 router.post('/login', validate(loginSchema), AuthController.login);
 
 router.patch(
-  '/update',
+  '/update/:idNumber',
   authenticateAndAttachUserContext,
   // validate(loginSchema), // TODO: Add update schemas
   AuthController.updateProfile,
@@ -50,6 +51,13 @@ router.post(
   '/forgot-password',
   validate(emailOrIdSchema),
   AuthController.forgotPassword,
+);
+
+router.post(
+  '/change-password',
+  validate(changePasswordSchema),
+  authenticateAndAttachUserContext,
+  AuthController.changePassword,
 );
 
 router.post('/logout', validate(logoutSchema), AuthController.logout);

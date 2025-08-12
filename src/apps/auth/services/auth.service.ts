@@ -263,70 +263,6 @@ class AuthService {
     }
   }
 
-  async editProfile(
-    payload: any,
-  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
-    try {
-      const { idNumber, password, ...restPayload } = payload;
-      const userResponse = (await UserService.findOne({
-        idNumber,
-      })) as SuccessResponseType<IUserModel>;
-
-      if (!userResponse.success || !userResponse.document) {
-        throw new ErrorResponse(
-          'UNAUTHORIZED',
-          'ID number entered is not register',
-        );
-      }
-
-      const user = userResponse.document;
-
-      if (!user.verified) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
-      }
-
-      if (!user.active) {
-        throw new ErrorResponse(
-          'FORBIDDEN',
-          'Inactive account, please contact admins.',
-        );
-      }
-
-      const isValidPasswordResponse = (await UserService.isValidPassword(
-        user.idNumber,
-        password,
-      )) as SuccessResponseType<{ isValid: boolean }>;
-      if (
-        !isValidPasswordResponse.success ||
-        !isValidPasswordResponse.document?.isValid
-      ) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
-      }
-
-      const updateProfileResponse = (await UserService.updateProfile(
-        user.idNumber,
-        restPayload,
-      )) as SuccessResponseType<IUserModel>;
-
-      if (!updateProfileResponse.success) {
-        throw updateProfileResponse.error;
-      }
-
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof ErrorResponse
-            ? error
-            : new ErrorResponse(
-                'INTERNAL_SERVER_ERROR',
-                (error as Error).message,
-              ),
-      };
-    }
-  }
-
   async resetPassword(
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
@@ -366,6 +302,123 @@ class AuthService {
 
       if (!updatePasswordResponse.success) {
         throw updatePasswordResponse.error;
+      }
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async changePassword(
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const { currentPassword, newPassword, idNumber } = payload;
+
+      const userResponse = (await UserService.findOne(
+        idNumber,
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'This ID number is not register.',
+        );
+      }
+
+      const user = userResponse.document;
+      const isValidPasswordResponse = (await UserService.isValidPassword(
+        user.idNumber,
+        currentPassword,
+      )) as SuccessResponseType<{ isValid: boolean }>;
+      if (
+        !isValidPasswordResponse.success ||
+        !isValidPasswordResponse.document?.isValid
+      ) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
+      }
+
+      if (!user.verified) {
+        throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
+
+      const updatePasswordResponse = await UserService.updatePassword(
+        user.idNumber,
+        newPassword,
+      );
+
+      if (!updatePasswordResponse.success) {
+        throw updatePasswordResponse.error;
+      }
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async editProfile(
+    idNumber: string,
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const userResponse = (await UserService.findOne({
+        idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse(
+          'UNAUTHORIZED',
+          'ID number entered is not register',
+        );
+      }
+
+      const user = userResponse.document;
+
+      if (!user.verified) {
+        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
+      }
+
+      const updateProfileResponse = (await UserService.updateProfile(
+        user.idNumber,
+        payload,
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!updateProfileResponse.success) {
+        throw updateProfileResponse.error;
       }
 
       return { success: true };

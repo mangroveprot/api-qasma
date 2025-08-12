@@ -1,5 +1,5 @@
 export interface TOtherInfoStudent {
   course: string;
-  yearLevel: number;
+  yearLevel: string;
   block: string;
 }
