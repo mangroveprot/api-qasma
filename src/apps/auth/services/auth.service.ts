@@ -325,9 +325,9 @@ class AuthService {
     try {
       const { currentPassword, newPassword, idNumber } = payload;
 
-      const userResponse = (await UserService.findOne(
+      const userResponse = (await UserService.findOne({
         idNumber,
-      )) as SuccessResponseType<IUserModel>;
+      })) as SuccessResponseType<IUserModel>;
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
@@ -345,7 +345,7 @@ class AuthService {
         !isValidPasswordResponse.success ||
         !isValidPasswordResponse.document?.isValid
       ) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
+        throw new ErrorResponse('FORBIDDEN', 'Wrong password.');
       }
 
       if (!user.verified) {
