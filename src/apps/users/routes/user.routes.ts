@@ -5,7 +5,7 @@ import {
   authorizeRoles,
   validate,
 } from '../../../common/shared';
-import { registerSchema } from '../../auth/validators/auth';
+import { newUser, registerSchema } from '../../auth/validators/auth';
 import { Role } from '../types/user';
 
 const router = Router();
@@ -14,7 +14,7 @@ router.post(
   '/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff),
-  validate(registerSchema),
+  validate(newUser),
   UserController.createUser,
 );
 
@@ -42,7 +42,7 @@ router.get(
 );
 
 router.get(
-  '/sync/:lastSynced/:idNumber?',
+  '/sync/:lastSynced/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   UserController.sync,

@@ -9,6 +9,7 @@ import {
   acceptAppointmentSchema,
   appointmentSchema,
   cancelAppointmentSchema,
+  counselorAvailabilitySchema,
   updateAppointmentSchema,
   verifyAppointmentSchema,
 } from '../validation';
@@ -39,17 +40,10 @@ router.get(
 );
 
 router.get(
-  '/sync/:lastSynced/:idNumber?',
+  '/sync/:lastSynced/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AppointmentController.sync,
-);
-
-router.get(
-  '/slots/:duration',
-  authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
-  AppointmentController.getSlots,
 );
 
 router.get('/getById/:appointmentId', AppointmentController.getAppointmentById);
@@ -81,6 +75,21 @@ router.put(
   authorizeRoles(Role.Counselor),
   validate(verifyAppointmentSchema),
   AppointmentController.verifyAppointment,
+);
+
+router.get(
+  '/slots/:duration',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  AppointmentController.getSlots,
+);
+
+router.post(
+  '/counselors/availability',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff),
+  validate(counselorAvailabilitySchema),
+  AppointmentController.counselorAvailability,
 );
 
 export default router;

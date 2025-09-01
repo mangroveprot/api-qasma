@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponse, ErrorResponseType } from '../../../common/shared';
 import { AppointmentService } from '../services';
+import moment from 'moment';
 
 class AppointmentController {
   static async createAppointment(
@@ -43,11 +44,17 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { lastSynced, idNumber } = req.params;
+      const { lastSynced } = req.params;
+      const { idNumber } = req.query;
+
+      const query = idNumber ? { studentId: idNumber as string } : {};
+
       const response = await AppointmentService.findAll({
-        query: { studentId: idNumber },
+        query,
         lastSynced: lastSynced,
+        paginate: false,
       });
+
       if (response.success) {
         ApiResponse.success(res, response, 201);
       } else {
@@ -140,6 +147,7 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const { appoinmentId } = req.params;
       const response = await AppointmentService.acceptAppointment(req.body);
       if (response.success) {
         ApiResponse.success(res, response);
@@ -176,6 +184,25 @@ class AppointmentController {
     try {
       const response = await AppointmentService.generateAppointmentSlots(
         req.params.duration,
+      );
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async counselorAvailability(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.checkCounselorAvailability(
+        req.body,
       );
       if (response.success) {
         ApiResponse.success(res, response);

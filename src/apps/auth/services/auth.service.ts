@@ -401,17 +401,6 @@ class AuthService {
 
       const user = userResponse.document;
 
-      if (!user.verified) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
-      }
-
-      if (!user.active) {
-        throw new ErrorResponse(
-          'FORBIDDEN',
-          'Inactive account, please contact admins.',
-        );
-      }
-
       const updateProfileResponse = (await UserService.updateProfile(
         user.idNumber,
         payload,

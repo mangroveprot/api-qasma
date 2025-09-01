@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponse, ErrorResponseType } from '../../../common/shared';
 import { AppoinmentConfigService } from '../services';
+import moment from 'moment';
 
 class AppointmentConfigController {
   static async createConfig(
@@ -65,6 +66,7 @@ class AppointmentConfigController {
   ): Promise<void> {
     try {
       const { lastSynced } = req.params;
+
       const response = await AppoinmentConfigService.findAll({
         lastSynced: lastSynced,
       });

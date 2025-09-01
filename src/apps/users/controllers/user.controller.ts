@@ -5,6 +5,7 @@ import {
   SuccessResponseType,
 } from '../../../common/shared';
 import { UserService } from '../services';
+import moment from 'moment';
 
 class UserController {
   static async createUser(
@@ -13,7 +14,6 @@ class UserController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      // TODO: Check for validation
       const response = await UserService.create(req.body);
       if (response.success) {
         ApiResponse.success(res, response, 201);
@@ -105,10 +105,14 @@ class UserController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { lastSynced, idNumber } = req.params;
+      const { lastSynced } = req.params;
+      const { idNumber } = req.query;
+
+      const query = idNumber ? { idNumber: idNumber as string } : {};
       const response = await UserService.findAll({
-        query: { idNumber: idNumber },
+        query: query,
         lastSynced: lastSynced,
+        paginate: false,
       });
       if (response.success) {
         ApiResponse.success(res, response, 201);

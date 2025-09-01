@@ -34,7 +34,7 @@ export const updateAppointmentSchema = Joi.object({
   checkInStatus: Joi.string().optional(),
   qrCode: Joi.object({
     token: Joi.string().required(),
-    scannedById: Joi.date().iso().required(),
+    scannedById: Joi.string().required(),
     scannedAt: Joi.date().iso().required(),
   }).optional(),
   cancellation: Joi.object({
@@ -59,4 +59,9 @@ export const acceptAppointmentSchema = Joi.object({
   studentId: Joi.string().required(),
   counselorId: Joi.string().required(),
   status: Joi.string().valid(...Object.values(Status)),
+});
+
+export const counselorAvailabilitySchema = Joi.object({
+  scheduledStartAt: Joi.date().iso().required(),
+  scheduledEndAt: Joi.date().iso().required(),
 });

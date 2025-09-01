@@ -20,6 +20,7 @@ import {
 import { AppoinmentConfigService } from '../../appointment-config/services';
 import { IAppointmentConfig } from '../../appointment-config/types';
 import moment from 'moment';
+import { checkAvailableCounselorsForTimeSlot } from '../../../helpers/checkAvailableCounselorsForTimeSlot';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -204,7 +205,6 @@ class AppointmentService extends BaseService<
 
       return {
         success: true,
-        document: updateResponse.document,
       };
     } catch (error) {
       return {
@@ -346,6 +346,61 @@ class AppointmentService extends BaseService<
       });
 
       return { success: true, document: getAvailableSlots };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async checkCounselorAvailability(
+    payload: any,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      const { scheduledStartAt, scheduledEndAt } = payload;
+      const [counselorRes, appointmentRes] = await Promise.all([
+        UserService.findAll({ query: { role: Role.Counselor } }),
+        this.findAll(),
+      ]);
+
+      const counselors =
+        (counselorRes as SuccessResponseType<any>).documents || [];
+      const appointments =
+        (appointmentRes as SuccessResponseType<IAppointmentModel>).documents ||
+        [];
+
+      if (!counselors || counselors.length === 0) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'No counselors are currently available.',
+        );
+      }
+
+      const requestedStart = moment(scheduledStartAt).toDate();
+      const requestedEnd = moment(scheduledEndAt).toDate();
+
+      if (requestedStart >= requestedEnd) {
+        throw new ErrorResponse(
+          'VALIDATION_ERROR',
+          'Start time must be before end time.',
+        );
+      }
+
+      const availableCounselors = checkAvailableCounselorsForTimeSlot({
+        counselors,
+        startTime: requestedStart,
+        endTime: requestedEnd,
+        existingAppointments: appointments,
+      });
+
+      return {
+        success: true,
+        documents: availableCounselors,
+      };
     } catch (error) {
       return {
         success: false,

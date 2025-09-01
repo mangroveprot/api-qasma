@@ -15,7 +15,7 @@ export interface IUserModel extends IUser, IBaseModel, Document {}
 const UserSchema = createBaseSchema<IUserModel>(
   {
     idNumber: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, unique: true },
     password: { type: String, required: true },
     role: {
       type: String,
@@ -24,13 +24,13 @@ const UserSchema = createBaseSchema<IUserModel>(
     },
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
-    first_name: { type: String, required: true },
+    first_name: { type: String },
     middle_name: { type: String },
-    last_name: { type: String, required: true },
+    last_name: { type: String },
     suffix: { type: String },
-    gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-    date_of_birth: { type: Date, required: true },
-    contact_number: { type: String, required: true },
+    gender: { type: String, enum: ['male', 'female', 'other'] },
+    date_of_birth: { type: Date },
+    contact_number: { type: String },
     address: { type: String },
     facebook: { type: String },
     other_info: {

@@ -27,7 +27,6 @@ class AppoinmentConfigService extends BaseService<
     try {
       const getAllRepsonse =
         (await this.findAll()) as SuccessResponseType<IAppointmentConfigModel>;
-      console.log(getAllRepsonse.documents);
 
       if (getAllRepsonse.results) {
         throw new ErrorResponse(
