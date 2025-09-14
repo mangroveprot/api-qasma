@@ -246,25 +246,25 @@ class AppointmentService extends BaseService<
         throw verifyQRToken.error;
       }
 
-      // const updatePayload = {
-      //   status: Status.Completed,
-      //   checkInStatus: CheckInStatus.CheckIn,
-      //   checkInTime: getDateTime(),
-      //   qrCode: {
-      //     token: token,
-      //     scannedById: payload.counselorId, // scanned by who?
-      //     scannedAt: getDateTime(),
-      //   },
-      // };
+      const updatePayload = {
+        status: Status.Completed,
+        checkInStatus: CheckInStatus.CheckIn,
+        checkInTime: getDateTime(),
+        qrCode: {
+          token: token,
+          scannedById: payload.counselorId, // scanned by who?
+          scannedAt: getDateTime(),
+        },
+      };
 
-      // const updateResponse = (await this.update(
-      //   { appointmentId },
-      //   { ...updatePayload },
-      // )) as SuccessResponseType<IAppointmentModel>;
+      const updateResponse = (await this.update(
+        { appointmentId },
+        { ...updatePayload },
+      )) as SuccessResponseType<IAppointmentModel>;
 
-      // if (!updateResponse.success) {
-      //   throw updateResponse.error;
-      // }
+      if (!updateResponse.success) {
+        throw updateResponse.error;
+      }
 
       return {
         success: true,
