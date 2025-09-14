@@ -37,7 +37,6 @@ router.post('/login', validate(loginSchema), AuthController.login);
 router.patch(
   '/update/:idNumber',
   authenticateAndAttachUserContext,
-  // validate(loginSchema), // TODO: Add update schemas
   AuthController.updateProfile,
 );
 

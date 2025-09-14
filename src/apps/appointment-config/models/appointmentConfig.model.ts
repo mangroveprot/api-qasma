@@ -26,7 +26,6 @@ const AppointmentConfigSchema = createBaseSchema<IAppointmentConfigModel>(
       unique: true,
       required: true,
     },
-    session_duration: { type: Number, required: true },
     buffer_time: { type: Number, required: true },
     booking_lead_time: { type: Number, required: true },
     slot_days_range: { type: Number, required: true },

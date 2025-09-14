@@ -11,13 +11,10 @@ export const appointmentSchema = Joi.object({
 });
 
 export const verifyAppointmentSchema = Joi.object({
+  token: Joi.string().required(),
   appointmentId: Joi.string().required(),
-  status: Joi.string().valid(...Object.values(Status)),
-  qrCode: Joi.object({
-    token: Joi.string().required(),
-    scannedById: Joi.date().iso().required(),
-    scannedAt: Joi.date().iso().required(),
-  }),
+  studentId: Joi.string().required(),
+  counselorId: Joi.string().required(),
 });
 
 export const updateAppointmentSchema = Joi.object({

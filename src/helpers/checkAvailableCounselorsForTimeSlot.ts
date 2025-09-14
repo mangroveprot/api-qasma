@@ -94,7 +94,7 @@ export function checkAvailableCounselorsForTimeSlot({
       return !hasAppointmentConflict;
     })
     .map((counselor) => ({
-      id: counselor.id,
+      id: counselor.idNumber,
       name: `${counselor.first_name} ${counselor.last_name}`,
       email: counselor.email,
       specialization: counselor.other_info?.specialization,

@@ -1,7 +1,6 @@
 import Joi from 'joi';
 
 export const appointmentConfigSchema = Joi.object({
-  session_duration: Joi.number().required(),
   buffer_time: Joi.number().required(),
   booking_lead_time: Joi.number().required(),
   slot_days_range: Joi.number().required(),

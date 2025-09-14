@@ -20,7 +20,7 @@ router.post(
 );
 
 router.patch(
-  '/update',
+  '/:configId',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor),
   AppointmentConfigController.updateConfig,

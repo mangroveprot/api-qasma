@@ -29,7 +29,9 @@ class AppointmentConfigController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const { configId } = req.params;
       const response = await AppoinmentConfigService.updateAppointmentConfig(
+        configId,
         req.body,
       );
       if (response.success) {

@@ -173,6 +173,10 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
     updateInput: Partial<T>,
     includeDeleted = false,
   ): Promise<SuccessResponseType<T> | ErrorResponseType> {
+    console.log(
+      '========= Available Day Time:',
+      JSON.stringify(query, null, 2),
+    );
     try {
       const documentToUpdate = await this.repository.findOne(
         query,

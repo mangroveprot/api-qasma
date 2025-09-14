@@ -1,6 +1,5 @@
 export interface IAppointmentConfig {
   configId: string;
-  session_duration: number;
   buffer_time: number;
   booking_lead_time: number; // ahead time when booking
   slot_days_range: number;
@@ -21,7 +20,6 @@ export interface IAppointmentConfig {
 /*
 const exampleConfig: IAppointmentConfig = {
   configId: "abc123",
-  session_duration: 60,
   bufferTime: 15,
   reminders: [
     "Reminder: Your appointment is in 30 minutes",

@@ -105,11 +105,10 @@ class AppoinmentConfigService extends BaseService<
   }
 
   async updateAppointmentConfig(
+    configId: String,
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
-      const { configId, ...restPayload } = payload;
-
       const findResponse = (await this.findOne({
         configId,
       })) as SuccessResponseType<IAppointmentConfigModel>;
@@ -123,7 +122,7 @@ class AppoinmentConfigService extends BaseService<
 
       const updateResponse = (await this.update(
         { configId },
-        { restPayload },
+        { ...payload },
       )) as SuccessResponseType<IAppointmentConfigModel>;
 
       if (!updateResponse.success) {
