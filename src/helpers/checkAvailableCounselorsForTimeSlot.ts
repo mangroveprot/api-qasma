@@ -67,6 +67,11 @@ export function checkAvailableCounselorsForTimeSlot({
 
   const availableCounselors = counselors
     .filter((counselor) => {
+      // skip this counselor if no otherinfo.unavailable found
+      if (!counselor.other_info) {
+        return false;
+      }
+
       // unavailable time for this day
       const counselorUnavailable =
         counselor.other_info?.unavailableTimes?.[dayKey] || [];
