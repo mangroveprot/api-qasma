@@ -31,7 +31,24 @@ export function checkAvailableCounselorsForTimeSlot({
   const dateStr = formatDate(startTime);
   const dayKey = getDayKeyFromDate(startTime);
 
+  console.log('=== DEBUG: checkAvailableCounselorsForTimeSlot ===');
+  console.log('Date String:', dateStr);
+  console.log('Day Key:', dayKey);
+  console.log(
+    'Start Time Hours:',
+    startTime.getHours(),
+    'Minutes:',
+    startTime.getMinutes(),
+  );
+  console.log(
+    'End Time Hours:',
+    endTime.getHours(),
+    'Minutes:',
+    endTime.getMinutes(),
+  );
+
   if (!dayKey) {
+    console.log('No day key - returning empty');
     return [];
   }
 
@@ -67,18 +84,44 @@ export function checkAvailableCounselorsForTimeSlot({
 
   const availableCounselors = counselors
     .filter((counselor) => {
+      // unavailable time for this day
       const counselorUnavailable =
         counselor.other_info?.unavailableTimes?.[dayKey] || [];
+
+      // check if entire day is marked unavailable
+      const isEntireDayUnavailable = counselorUnavailable.some(
+        (unavailableTime: WorkingSession) => {
+          const unavailableSlot = {
+            start: timeStringToMinutes(unavailableTime.start),
+            end: timeStringToMinutes(unavailableTime.end),
+          };
+          console.log(
+            `Checking unavailable slot: ${unavailableTime.start} (${unavailableSlot.start} mins) - ${unavailableTime.end} (${unavailableSlot.end} mins)`,
+          );
+          const isFullDay =
+            unavailableSlot.start === 0 && unavailableSlot.end >= 1439;
+          console.log('Is full day unavailable?', isFullDay);
+          return isFullDay;
+        },
+      );
+
+      // skip when the entire day is unavailable
+      if (isEntireDayUnavailable) {
+        return false;
+      }
+
       const hasUnavailableConflict = counselorUnavailable.some(
         (unavailableTime: WorkingSession) => {
           const unavailableSlot = {
             start: timeStringToMinutes(unavailableTime.start),
             end: timeStringToMinutes(unavailableTime.end),
           };
-          return overlaps(requestedSlot, unavailableSlot);
+          const conflict = overlaps(requestedSlot, unavailableSlot);
+          return conflict;
         },
       );
 
+      // skip if has unavailable time conflict
       if (hasUnavailableConflict) {
         return false;
       }
@@ -87,11 +130,21 @@ export function checkAvailableCounselorsForTimeSlot({
         (appt) => appt.counselorId === counselor.id,
       );
 
-      const hasAppointmentConflict = counselorAppointments.some((appt) =>
-        overlaps(requestedSlot, appt.timeRange),
-      );
+      const hasAppointmentConflict = counselorAppointments.some((appt) => {
+        const conflict = overlaps(requestedSlot, appt.timeRange);
+        console.log(
+          `Appointment ${appt.timeRange.start}-${appt.timeRange.end} conflicts?`,
+          conflict,
+        );
+        return conflict;
+      });
 
-      return !hasAppointmentConflict;
+      // skip if has appointment confict
+      if (hasAppointmentConflict) {
+        return false;
+      }
+
+      return true;
     })
     .map((counselor) => ({
       id: counselor.idNumber,
@@ -105,5 +158,5 @@ export function checkAvailableCounselorsForTimeSlot({
 }
 
 function overlaps(a: TimeRange, b: TimeRange): boolean {
-  return a.start < b.end && b.start < a.end;
+  return a.start <= b.end && b.start <= a.end;
 }

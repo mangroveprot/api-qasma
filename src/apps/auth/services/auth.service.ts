@@ -20,29 +20,63 @@ class AuthService {
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
       const { email, idNumber } = payload;
-
       const [idResponse, emailResponse] = (await Promise.all([
         UserService.findOne({ idNumber }),
         UserService.findOne({ email }),
       ])) as [SuccessResponseType<IUserModel>, SuccessResponseType<IUserModel>];
 
-      const isExist = (() => {
-        const id = idResponse.success || !!idResponse.document;
-        const email = emailResponse.success || !!emailResponse.document;
+      let existingUser: IUserModel | null = null;
 
-        let message = '';
-        if (id && email) message = 'id number and email';
-        else if (id) message = 'id';
-        else if (email) message = 'email';
+      if (idResponse.success && idResponse.document) {
+        existingUser = idResponse.document;
+      } else if (emailResponse.success && emailResponse.document) {
+        existingUser = emailResponse.document;
+      }
 
-        return { id, email, message };
-      })();
+      if (existingUser) {
+        if (existingUser.verified) {
+          const isExist = (() => {
+            const id = idResponse.success || !!idResponse.document;
+            const email = emailResponse.success || !!emailResponse.document;
+            let message = '';
+            if (id && email) message = 'id number and email';
+            else if (id) message = 'id';
+            else if (email) message = 'email';
+            return { message };
+          })();
 
-      if (isExist.id || isExist.email) {
-        throw new ErrorResponse(
-          'UNIQUE_FIELD_ERROR',
-          `The entered ${isExist.message} is already registered.`,
-        );
+          throw new ErrorResponse(
+            'UNIQUE_FIELD_ERROR',
+            `The entered ${isExist.message} is already registered.`,
+          );
+        } else {
+          const updateUserRes = (await UserService.update(
+            { idNumber: existingUser.idNumber },
+            { ...payload },
+          )) as SuccessResponseType<IUserModel>;
+
+          if (!updateUserRes.success || !updateUserRes.document) {
+            throw updateUserRes.error;
+          }
+
+          const otpResponse = (await OTPService.generate(
+            email,
+            config.otp.purposes.ACCOUNT_VERIFICATION.code,
+          )) as SuccessResponseType<IOTPModel>;
+
+          if (!otpResponse.success || !otpResponse.document) {
+            throw otpResponse.error;
+          }
+
+          const { code, ...restOtp } = otpResponse.document.toObject();
+          return {
+            success: true,
+            document: {
+              user: updateUserRes.document,
+              otp: restOtp,
+            },
+          };
+        }
       }
 
       const createUserRes = (await UserService.create(
@@ -63,7 +97,6 @@ class AuthService {
       }
 
       const { code, ...restOtp } = otpResponse.document.toObject();
-
       return {
         success: true,
         document: {
@@ -99,7 +132,7 @@ class AuthService {
       }
 
       if (userResponse.document.verified) {
-        return { success: true }; // If already verified, return success without further actions
+        return { success: true };
       }
 
       const validateOtpResponse = await OTPService.validate(

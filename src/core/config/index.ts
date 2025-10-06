@@ -48,6 +48,9 @@ interface Config {
     >;
   };
   mail: {
+    strategy: string;
+    apiHost: string;
+    apiToken: string;
     host: string;
     port: number;
     user: string;
@@ -129,10 +132,16 @@ export const config: Config = {
     },
   },
   mail: {
+    strategy:
+      process.env.NODE_ENV === 'production'
+        ? process.env.MAIL_STRATEGY || ''
+        : 'smtp',
     host:
       process.env.NODE_ENV === 'production'
         ? process.env.SMTP_HOST || ''
         : process.env.MAILDEV_HOST || 'localhost',
+    apiHost: process.env.MAIL_API_HOST || '',
+    apiToken: process.env.MAIL_API_TOKEN || '',
     port: parseInt(
       process.env.NODE_ENV === 'production'
         ? process.env.SMTP_PORT || '587'

@@ -69,7 +69,7 @@ class UserService extends BaseService<
         ...query,
       })) as SuccessResponseType<IUserModel>;
 
-      if (user.success) {
+      if (user.success && user.document?.verified) {
         throw new ErrorResponse(
           'UNAUTHORIZED',
           `This ${isEmail ? 'email' : 'ID number'} is already registered.`,
@@ -196,14 +196,14 @@ class UserService extends BaseService<
         throw response.error;
       }
 
-      const hashedPassword = await bycrypt.hash(
-        newPassword,
-        config.bcrypt.saltRound,
-      );
+      // const hashedPassword = await bycrypt.hash(
+      //   newPassword,
+      //   config.bcrypt.saltRound,
+      // );
 
       const updateResponse = (await this.update(
         { idNumber: idNumber },
-        { password: hashedPassword },
+        { password: newPassword },
       )) as SuccessResponseType<IUserModel>;
 
       if (!updateResponse.success) {

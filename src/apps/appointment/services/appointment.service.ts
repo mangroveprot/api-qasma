@@ -12,6 +12,7 @@ import AppointmentModel, {
 import { AppointmentRepository } from '../repositories';
 import { CheckInStatus, Status } from '../types';
 import {
+  formatDate,
   generateAppointmentSlots,
   getDateTime,
   mergedCounselorsUnavailableTimes,

@@ -204,6 +204,7 @@ class AppointmentController {
       const response = await AppointmentService.checkCounselorAvailability(
         req.body,
       );
+      console.log(req.body);
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

@@ -56,6 +56,35 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  try {
+    const update = this.getUpdate() as any;
+
+    const passwordToHash = update?.password || update?.$set?.password;
+    const isInRoot = !!update?.password;
+    const isInSet = !!update?.$set?.password;
+
+    if (passwordToHash) {
+      const salt = await bycrypt.genSalt(config.bcrypt.saltRound);
+      const hashedPassword = await bycrypt.hash(passwordToHash, salt);
+
+      if (isInRoot) {
+        update.password = hashedPassword;
+      }
+
+      if (isInSet) {
+        update.$set.password = hashedPassword;
+      }
+
+      this.setUpdate(update);
+    }
+
+    next();
+  } catch (error) {
+    next(error as CallbackError);
+  }
+});
+
 const UserModelMongoose = new BaseModel<IUserModel>(
   USER_MODEL_NAME,
   UserSchema,
