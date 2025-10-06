@@ -42,7 +42,6 @@ class MailService {
     fromName?: string;
     fromEmail?: string;
   }): Promise<SuccessResponseType<void> | ErrorResponseType> {
-    console.log(config.mail.strategy);
     try {
       let htmlContent;
       if (htmlTemplate) {

@@ -115,7 +115,7 @@ export const config: Config = {
   },
   otp: {
     length: parseInt(process.env.OTP_LENGTH || '6', 10),
-    expiration: parseInt(process.env.OTP_EXPIRATION || '5') * 60 * 100,
+    expiration: parseInt(process.env.OTP_EXPIRATION || '5') * 60 * 1000,
     purposes: {
       FORGOT_PASSWORD: {
         code: 'FORGOT_PASSWORD',

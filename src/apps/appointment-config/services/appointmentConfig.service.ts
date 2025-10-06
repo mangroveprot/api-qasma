@@ -71,8 +71,6 @@ class AppoinmentConfigService extends BaseService<
       const result =
         (await this.findAll()) as SuccessResponseType<IAppointmentConfigModel>;
 
-      console.log(result);
-
       if (!result.documents?.length) {
         throw new ErrorResponse(
           'NOT_FOUND',
