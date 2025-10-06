@@ -5,7 +5,7 @@
   "scripts": {
     "start:dev": "npx ts-node-dev --poll src/server.ts",
     "build": "rimraf ./build && npx tsc && npm run copy-files",
-    "start": "npx run build && node build/server.js",
+    "start": "npm run build && node build/server.js",
     "copy-files": "copyfiles -u 1 src/**/*.html build/ && copyfiles -u 1 src/**/*.webp build/"
   },
   "keywords": [],

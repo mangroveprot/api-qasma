@@ -322,9 +322,9 @@ class AppointmentService extends BaseService<
         );
       }
 
-      const allUnavailable: UnavailableTimes[] = counselors.map(
-        (counselor) => counselor.other_info.unavailableTimes,
-      );
+      const allUnavailable: UnavailableTimes[] = counselors
+        .filter((counselor) => counselor.other_info) // filter counselor doesnt have otherinfo
+        .map((counselor) => counselor.other_info.unavailableTimes);
 
       // get the current and upcoming appointments and also must be approved or pending
       const upcomingAppointments = appointments.filter((appointment) => {
