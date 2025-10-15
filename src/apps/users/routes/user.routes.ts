@@ -4,6 +4,7 @@ import {
   authenticateAndAttachUserContext,
   authorizeRoles,
   validate,
+  parseQueryMiddleware,
 } from '../../../common/shared';
 import { newUser, registerSchema } from '../../auth/validators/auth';
 import { Role } from '../types/user';
@@ -20,8 +21,9 @@ router.post(
 
 router.get(
   '/',
-  authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff),
+  parseQueryMiddleware,
+  // authenticateAndAttachUserContext,
+  //  authorizeRoles(Role.Counselor, Role.Staff),
   UserController.getAllUsers,
 );
 

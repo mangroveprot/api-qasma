@@ -237,7 +237,6 @@ class AppointmentService extends BaseService<
 
       const { token, ...restPayload } = payload;
 
-      //no need to verify counselor cause the verify QR token is the one who handle
       const verifyQRToken = await QRCodeService.verifyQRToken(
         restPayload,
         token,
@@ -247,20 +246,18 @@ class AppointmentService extends BaseService<
         throw verifyQRToken.error;
       }
 
-      const updatePayload = {
-        status: Status.Completed,
-        checkInStatus: CheckInStatus.CheckIn,
-        checkInTime: getDateTime(),
-        qrCode: {
-          token: token,
-          scannedById: payload.counselorId, // scanned by who?
-          scannedAt: getDateTime(),
-        },
-      };
-
       const updateResponse = (await this.update(
         { appointmentId },
-        { ...updatePayload },
+        {
+          status: Status.Completed,
+          checkInStatus: CheckInStatus.CheckIn,
+          checkInTime: getDateTime(),
+          qrCode: {
+            token: token,
+            scannedById: String(payload.counselorId),
+            scannedAt: getDateTime(),
+          },
+        },
       )) as SuccessResponseType<IAppointmentModel>;
 
       if (!updateResponse.success) {
@@ -269,7 +266,6 @@ class AppointmentService extends BaseService<
 
       return {
         success: true,
-        // document: updateResponse.document,
       };
     } catch (error) {
       return {

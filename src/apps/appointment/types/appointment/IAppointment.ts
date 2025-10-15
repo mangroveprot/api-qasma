@@ -17,6 +17,14 @@ export interface IAppointment {
   checkInTime?: Date;
   staffId?: string;
   counselorId?: string;
+  feedbackSubmitted?: boolean;
+  reschedule?: {
+    rescheduledBy: string;
+    remarks: string;
+    rescheduledAt?: string;
+    previousStart?: Date;
+    previousEnd?: Date;
+  };
   qrCode?: {
     token: string; //qr token
     scannedById?: string; // scanned by who?

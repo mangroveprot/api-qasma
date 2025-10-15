@@ -25,10 +25,20 @@ export const updateAppointmentSchema = Joi.object({
   appointmentType: Joi.string().optional(),
   appointmentCategory: Joi.string().optional(),
   description: Joi.string().optional(),
+  counselorId: Joi.string().optional(),
+  staffId: Joi.string().optional(),
   status: Joi.string()
     .valid(...Object.values(Status))
     .optional(),
   checkInStatus: Joi.string().optional(),
+  feedbackSubmitted: Joi.boolean().optional(),
+  reschedule: Joi.object({
+    rescheduledBy: Joi.string().optional().allow(null, ''),
+    remarks: Joi.string().optional().allow(null, ''),
+    rescheduledAt: Joi.date().iso().optional().allow(null),
+    previousStart: Joi.date().iso().optional().allow(null),
+    previousEnd: Joi.date().iso().optional().allow(null),
+  }).optional(),
   qrCode: Joi.object({
     token: Joi.string().required(),
     scannedById: Joi.string().required(),
