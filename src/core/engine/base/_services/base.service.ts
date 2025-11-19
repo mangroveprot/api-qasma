@@ -104,7 +104,7 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
     query = {},
     sort = {},
     page = 1,
-    limit = 10,
+    limit = 50,
     searchTerm = '',
     paginate = true,
     includeDeleted = false,

@@ -122,7 +122,7 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const { email, code } = payload;
+      const { email, code, purpose } = payload;
       const userResponse = (await UserService.findOne({
         email,
       })) as SuccessResponseType<IUserModel>;
@@ -131,24 +131,38 @@ class AuthService {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
       }
 
-      if (userResponse.document.verified) {
+      const purposeCode = config.otp.purposes[purpose]?.code;
+
+      if (!purposeCode) {
+        throw new ErrorResponse('INVALID_PURPOSE', 'Invalid OTP purpose.');
+      }
+
+      if (
+        purpose === 'ACCOUNT_VERIFICATION' &&
+        userResponse.document.verified
+      ) {
         return { success: true };
       }
 
       const validateOtpResponse = await OTPService.validate(
         email,
         code,
-        config.otp.purposes.ACCOUNT_VERIFICATION.code,
+        purposeCode,
       );
 
       if (!validateOtpResponse.success) {
         throw validateOtpResponse.error;
       }
 
-      const verifyUserResponse = await UserService.markAsVerified(email);
+      if (
+        purpose === 'ACCOUNT_VERIFICATION' &&
+        !userResponse.document.verified
+      ) {
+        const verifyUserResponse = await UserService.markAsVerified(email);
 
-      if (!verifyUserResponse.success) {
-        throw verifyUserResponse.error;
+        if (!verifyUserResponse.success) {
+          throw verifyUserResponse.error;
+        }
       }
 
       return { success: true };
@@ -461,6 +475,7 @@ class AuthService {
   async logout(
     accessToken: string,
     refreshToken: string,
+    idNumber: string,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
       if (!refreshToken || !accessToken) {
@@ -482,11 +497,13 @@ class AuthService {
         );
       }
 
-      // Blacklist the access token
+      // blacklist the access token
       await RedisService.setBlacklistedInRedis(accessToken);
 
-      // Remove the refresh token from Redis
+      // remove the refresh token from Redis
       await RedisService.removeFromRedis(idNumberFromRefresh);
+
+      await UserService.updateFcmToken(idNumber, '');
 
       return { success: true };
     } catch (error) {

@@ -260,6 +260,41 @@ class UserService extends BaseService<
       };
     }
   }
+
+  async updateFcmToken(
+    idNumber: string,
+    fcmToken: string,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const response = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!response.success || !response.document) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
+      }
+
+      const updateResponse = (await this.update({ idNumber: idNumber }, {
+        fcmToken: fcmToken,
+      } as any)) as SuccessResponseType<IUserModel>;
+
+      if (!updateResponse.success) {
+        throw updateResponse.error;
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
 }
 
 export default new UserService();

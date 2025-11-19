@@ -32,6 +32,18 @@ interface Config {
     tokenExpireTime: number; //15days
     blacklistExpireTime: number; //30days
   };
+  firebase: {
+    projectId: string;
+    privateKey: string;
+    clientEmail: string;
+  };
+  bullmq: {
+    connection: {
+      host: string;
+      port: number;
+      password?: string;
+    };
+  };
   rate: {
     limit: number;
     max: number;
@@ -105,6 +117,26 @@ export const config: Config = {
       process.env.REDIS_BLACKLIST_EXPIRE_TIME || '2592000',
       10,
     ),
+  },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID || '',
+    privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+  },
+  bullmq: {
+    connection: {
+      host:
+        process.env.NODE_ENV === 'production'
+          ? process.env.REDIS_CLOUD_HOST || ''
+          : process.env.REDIS_HOST || 'localhost',
+      port: parseInt(
+        process.env.NODE_ENV === 'production'
+          ? process.env.REDIS_CLOUD_PORT || '6379'
+          : process.env.REDIS_PORT || '6379',
+        10,
+      ),
+      password: process.env.REDIS_PASSWORD || undefined,
+    },
   },
   rate: {
     limit: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),

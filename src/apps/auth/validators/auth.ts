@@ -79,6 +79,7 @@ export const newUser = Joi.object({
 export const verifyAccountSchema = Joi.object({
   email: Joi.string().email().required(),
   code: Joi.string().required(),
+  purpose: Joi.string().required(),
 }).unknown(false);
 
 export const loginSchema = Joi.object({
@@ -127,4 +128,8 @@ export const validateOTPSchema = Joi.object({
   email: Joi.string().email().required(),
   purpose: Joi.string().required(),
   code: Joi.string().min(6).required(),
+}).unknown(false);
+
+export const validateFCMToken = Joi.object({
+  fcmToken: Joi.string().required(),
 }).unknown(false);

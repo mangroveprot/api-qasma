@@ -6,7 +6,11 @@ import {
   validate,
   parseQueryMiddleware,
 } from '../../../common/shared';
-import { newUser, registerSchema } from '../../auth/validators/auth';
+import {
+  newUser,
+  registerSchema,
+  validateFCMToken,
+} from '../../auth/validators/auth';
 import { Role } from '../types/user';
 
 const router = Router();
@@ -43,11 +47,14 @@ router.get(
   UserController.getCurrentUser,
 );
 
-router.get(
-  '/sync/:lastSynced/',
+router.get('/sync/:lastSynced/', UserController.sync);
+
+router.post(
+  '/fcm-token',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
-  UserController.sync,
+  validate(validateFCMToken),
+  UserController.updateFcmToken,
 );
 
 export default router;

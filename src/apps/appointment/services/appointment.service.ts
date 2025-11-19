@@ -22,6 +22,8 @@ import { AppoinmentConfigService } from '../../appointment-config/services';
 import { IAppointmentConfig } from '../../appointment-config/types';
 import moment from 'moment';
 import { checkAvailableCounselorsForTimeSlot } from '../../../helpers/checkAvailableCounselorsForTimeSlot';
+import { NotificationService } from '../../notifications/services';
+import { NotificationMessages } from '../../notifications/utils';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -31,6 +33,20 @@ class AppointmentService extends BaseService<
     const appointmentRepo = new AppointmentRepository(AppointmentModel);
     super(appointmentRepo);
     this.allowedFilterFields = ['status', 'updatedAt', 'studentId']; // for safety searching
+  }
+
+  private getAppointmentUserIds(appointment: IAppointmentModel): string[] {
+    const userIds: string[] = [appointment.studentId];
+
+    if (appointment.counselorId) {
+      userIds.push(appointment.counselorId);
+    }
+
+    if (appointment.staffId) {
+      userIds.push(appointment.staffId);
+    }
+
+    return userIds;
   }
 
   async createAppointment(
@@ -101,6 +117,23 @@ class AppointmentService extends BaseService<
         );
       }
 
+      const oldAppointment = appointmentResponse.document;
+
+      const isReschedule =
+        restPayload.scheduledStartAt &&
+        new Date(restPayload.scheduledStartAt).getTime() !==
+          oldAppointment.scheduledStartAt.getTime();
+
+      if (isReschedule) {
+        restPayload.reschedule = {
+          rescheduledBy: restPayload.reschedule?.rescheduledBy || 'system',
+          remarks: restPayload.reschedule?.remarks || null,
+          rescheduledAt: getDateTime(),
+          previousStart: oldAppointment.scheduledStartAt,
+          previousEnd: oldAppointment.scheduledEndAt,
+        };
+      }
+
       const updateResponse = (await this.update(
         { appointmentId },
         { ...restPayload },
@@ -108,6 +141,24 @@ class AppointmentService extends BaseService<
 
       if (!updateResponse.success) {
         throw updateResponse.error;
+      }
+
+      // send notification if time is change
+      if (isReschedule && updateResponse.document) {
+        const notification = NotificationMessages.buildRescheduledNotification(
+          oldAppointment,
+          updateResponse.document,
+        );
+
+        const userIds = this.getAppointmentUserIds(updateResponse.document);
+
+        await NotificationService.queueNotification({
+          idNumbers: userIds,
+          type: notification.type,
+          title: notification.title,
+          body: notification.body,
+          data: notification.data,
+        });
       }
 
       return {
@@ -148,6 +199,23 @@ class AppointmentService extends BaseService<
 
       if (!updateResponse.success) {
         throw updateResponse.error;
+      }
+
+      // cancellation notification
+      if (updateResponse.document) {
+        const notification = NotificationMessages.buildCancelledNotification(
+          updateResponse.document,
+        );
+
+        const userIds = this.getAppointmentUserIds(updateResponse.document);
+
+        await NotificationService.queueNotification({
+          idNumbers: userIds,
+          type: notification.type,
+          title: notification.title,
+          body: notification.body,
+          data: notification.data,
+        });
       }
 
       return {
@@ -202,6 +270,25 @@ class AppointmentService extends BaseService<
 
       if (!updateResponse.success) {
         throw updateResponse.error;
+      }
+
+      if (
+        updateResponse.document &&
+        updateResponse.document.status === Status.Approved
+      ) {
+        const notification = NotificationMessages.buildConfirmedNotification(
+          updateResponse.document,
+        );
+
+        const userIds = this.getAppointmentUserIds(updateResponse.document);
+
+        await NotificationService.queueNotification({
+          idNumbers: userIds,
+          type: notification.type,
+          title: notification.title,
+          body: notification.body,
+          data: notification.data,
+        });
       }
 
       return {
@@ -262,6 +349,26 @@ class AppointmentService extends BaseService<
 
       if (!updateResponse.success) {
         throw updateResponse.error;
+      }
+
+      // send completion notification
+      if (
+        updateResponse.document &&
+        updateResponse.document.status === Status.Completed
+      ) {
+        const notification = NotificationMessages.buildCompletedNotification(
+          updateResponse.document,
+        );
+
+        const userIds = this.getAppointmentUserIds(updateResponse.document);
+
+        await NotificationService.queueNotification({
+          idNumbers: userIds,
+          type: notification.type,
+          title: notification.title,
+          body: notification.body,
+          data: notification.data,
+        });
       }
 
       return {

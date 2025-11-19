@@ -21,15 +21,21 @@ export const appointmentConfigSchema = Joi.object({
       ),
     )
     .optional(),
+
   category_and_type: Joi.object()
     .pattern(
       Joi.string(),
-      Joi.array().items(
-        Joi.object({
-          type: Joi.string().required(),
-          duration: Joi.number().required(),
-        }),
-      ),
+      Joi.object({
+        description: Joi.string().optional().allow(null),
+        types: Joi.array()
+          .items(
+            Joi.object({
+              type: Joi.string().required(),
+              duration: Joi.number().required(),
+            }),
+          )
+          .required(),
+      }),
     )
     .required(),
 });

@@ -31,7 +31,7 @@ export interface IAppointment {
     scannedAt?: Date;
   };
   cancellation?: {
-    cancelledById: string; // ID of the user who cancelled
+    cancelledById: string;
     reason: string;
     cancelledAt: Date;
   };

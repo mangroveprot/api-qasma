@@ -33,6 +33,7 @@ const UserSchema = createBaseSchema<IUserModel>(
     contact_number: { type: String },
     address: { type: String },
     facebook: { type: String },
+    fcmToken: { type: String },
     other_info: {
       type: Schema.Types.Mixed,
       required: true,

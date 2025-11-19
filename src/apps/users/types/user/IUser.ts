@@ -19,5 +19,6 @@ export interface IUser {
   contact_number: string;
   address?: string;
   facebook?: string;
+  fcmToken?: string;
   other_info: TOtherInfoStudent | TOtherInfoCounselor;
 }

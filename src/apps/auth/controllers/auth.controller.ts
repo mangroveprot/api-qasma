@@ -60,8 +60,13 @@ class AuthController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const idNumber = (req as any).payload?.aud as string;
       const { accessToken, refreshToken } = req.body;
-      const response = await AuthService.logout(accessToken, refreshToken);
+      const response = await AuthService.logout(
+        accessToken,
+        refreshToken,
+        idNumber,
+      );
       if (response.success) {
         ApiResponse.success(res, response, 202);
       } else {

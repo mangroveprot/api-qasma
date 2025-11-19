@@ -123,6 +123,27 @@ class UserController {
       ApiResponse.error(res, error as ErrorResponseType);
     }
   }
+
+  static async updateFcmToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const idNumber = (req as any).payload?.aud as string;
+      const { fcmToken } = req.body;
+
+      const response = await UserService.updateFcmToken(idNumber, fcmToken);
+
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
 }
 
 export default UserController;
