@@ -486,9 +486,9 @@ class AuthService {
       }
 
       const { idNumber: idNumberFromRefresh } =
-        await JwtService.checkRefreshToken(refreshToken);
+        await JwtService.decodeRefreshToken(refreshToken);
       const { idNumber: idNumberFromAccess } =
-        await JwtService.checkAccessToken(accessToken);
+        await JwtService.decodeAccessToken(accessToken);
 
       if (idNumberFromAccess !== idNumberFromRefresh) {
         throw new ErrorResponse(
@@ -497,11 +497,9 @@ class AuthService {
         );
       }
 
-      // blacklist the access token
-      await RedisService.setBlacklistedInRedis(accessToken);
+      await RedisService.setBlacklistedInRedis(accessToken).catch(() => {});
 
-      // remove the refresh token from Redis
-      await RedisService.removeFromRedis(idNumberFromRefresh);
+      await RedisService.removeFromRedis(idNumberFromRefresh).catch(() => {});
 
       await UserService.updateFcmToken(idNumber, '');
 
