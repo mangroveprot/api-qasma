@@ -31,9 +31,37 @@ class NotificationController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { notificationId } = req.params;
+      const { notificationIds } = req.body;
+      const idNumber = (req as any).payload?.aud as string;
 
-      const response = await NotificationService.markAsRead(notificationId);
+      const response = await NotificationService.markAsRead(
+        idNumber,
+        notificationIds,
+      );
+
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async deleteNotifications(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { notificationIds } = req.body;
+      const idNumber = (req as any).payload?.aud as string;
+
+      const response = await NotificationService.deleteNotifications(
+        idNumber,
+        notificationIds,
+      );
 
       if (response.success) {
         ApiResponse.success(res, response);

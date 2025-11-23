@@ -3,8 +3,10 @@ import { config } from '../core/config';
 
 export const getDateTime = () => moment.tz(config.timeZone).toDate();
 
-export const formatDate = (date: Date | string): string => {
-  return moment(date).format('YYYY-MM-DD');
+export const formatDate = (date: moment.Moment | Date | string): string => {
+  return moment.isMoment(date)
+    ? date.tz(config.timeZone).format('YYYY-MM-DD')
+    : moment(date).tz(config.timeZone).format('YYYY-MM-DD');
 };
 
 export type TimeRange = { start: number; end: number };
@@ -44,5 +46,6 @@ export function getDayKeyFromDate(date: Date): Day {
     5: 'Friday',
     6: 'Saturday',
   };
-  return map[date.getDay()];
+  const dayNumber = moment(date).tz(config.timeZone).day();
+  return map[dayNumber];
 }

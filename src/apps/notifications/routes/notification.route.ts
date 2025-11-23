@@ -3,8 +3,13 @@ import { NotificationController } from '../controllers';
 import {
   authenticateAndAttachUserContext,
   authorizeRoles,
+  validate,
 } from '../../../common/shared';
 import { Role } from '../../users';
+import {
+  deleteNotificationsValidation,
+  markAsReadValidation,
+} from '../validation/notifications';
 
 const router = Router();
 
@@ -22,12 +27,20 @@ router.get(
   NotificationController.sync,
 );
 
-// Mark notification as read
 router.patch(
-  '/:notificationId/read/',
+  '/read/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Student, Role.Counselor, Role.Staff),
+  validate(markAsReadValidation),
   NotificationController.markAsRead,
+);
+
+router.delete(
+  '/',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Student, Role.Counselor, Role.Staff),
+  validate(deleteNotificationsValidation),
+  NotificationController.deleteNotifications,
 );
 
 export default router;

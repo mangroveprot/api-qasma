@@ -36,29 +36,29 @@ class NotificationService extends BaseService<
     data?: Record<string, any>;
   }): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const notifications = await Promise.all(
-        idNumbers.map((idNumber) =>
-          this.create({
-            idNumber,
-            type,
-            title,
-            body,
-            data,
-            status: 'pending',
-          } as any),
+      const notificationDocs = idNumbers.map((idNumber) => ({
+        idNumber,
+        type,
+        title,
+        body,
+        data,
+        status: 'pending' as const,
+      }));
+
+      const insertedNotifications = await this.repository.insertMany(
+        notificationDocs,
+      );
+
+      await Promise.all(
+        insertedNotifications.map((notification) =>
+          notificationQueue.add('send-notification', {
+            notificationId: notification.notificationId,
+          }),
         ),
       );
 
-      for (const notification of notifications) {
-        if (notification.success && notification.document) {
-          await notificationQueue.add('send-notification', {
-            notificationId: notification.document.notificationId,
-          });
-        }
-      }
-
       logger.info(
-        `Queued ${notifications.length} notifications of type: ${type}`,
+        `Queued ${insertedNotifications.length} notifications of type: ${type}`,
       );
 
       return { success: true };
@@ -77,16 +77,29 @@ class NotificationService extends BaseService<
   }
 
   async markAsRead(
-    notificationId: string,
-  ): Promise<SuccessResponseType<INotificationModel> | ErrorResponseType> {
+    idNumber: string,
+    notificationIds: string[],
+  ): Promise<
+    SuccessResponseType<{ modifiedCount: number }> | ErrorResponseType
+  > {
     try {
-      const notification = await this.repository.markAsRead(notificationId);
+      const notifications = await this.repository.findAll({
+        notificationId: { $in: notificationIds },
+        idNumber,
+      });
 
-      if (!notification) {
-        throw new ErrorResponse('NOT_FOUND_ERROR', 'Notification not found.');
+      if (notifications.length === 0) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'No notifications found.');
       }
 
-      return { success: true, document: notification };
+      const foundIds = notifications.map((n) => n.notificationId);
+
+      const modifiedCount = await this.repository.markManyAsRead(foundIds);
+
+      return {
+        success: true,
+        document: { modifiedCount } as any,
+      };
     } catch (error) {
       return {
         success: false,
@@ -120,6 +133,41 @@ class NotificationService extends BaseService<
       });
 
       return response;
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async deleteNotifications(
+    idNumber: string,
+    notificationIds: string[],
+  ): Promise<
+    SuccessResponseType<{ deletedCount: number }> | ErrorResponseType
+  > {
+    try {
+      const notifications = await this.repository.findAll({
+        notificationId: { $in: notificationIds },
+        idNumber,
+      });
+
+      if (notifications.length === 0) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'No notifications found.');
+      }
+
+      const foundIds = notifications.map((n) => n.notificationId);
+
+      const deletedCount = await this.repository.deleteMany(foundIds);
+
+      return {
+        success: true,
+        document: { deletedCount } as any,
+      };
     } catch (error) {
       return {
         success: false,

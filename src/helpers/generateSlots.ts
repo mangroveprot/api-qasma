@@ -34,9 +34,7 @@ export function generateAppointmentSlots({
 }): any {
   const slots: Record<string, string[]> = {};
 
-  // Use your existing getDateTime() function
   const now = getDateTime();
-  // But calculate minutes using moment to preserve timezone info
   const nowMoment = moment(now).tz(config.timeZone);
   const nowMinutes = nowMoment.hours() * 60 + nowMoment.minutes();
   const todayDateStr = formatDate(now);
@@ -48,12 +46,10 @@ export function generateAppointmentSlots({
       : Object.entries(appointmentConfig.available_day_time || {}),
   );
 
-  // get the valid appointments
   const validAppointments: Record<string, TimeRange[]> = {};
   for (const appt of existingAppointments) {
     if (appt.status === 'cancelled' || appt.cancellation?.cancelledAt) continue;
 
-    // convert appointment times to the same timezone
     const startMoment = moment(appt.scheduledAt).tz(config.timeZone);
     const endMoment = moment(appt.scheduledEndAt).tz(config.timeZone);
     const dateStr = startMoment.format('YYYY-MM-DD');
@@ -73,7 +69,6 @@ export function generateAppointmentSlots({
   let workingDayCount = 0;
   let offset = 0;
 
-  // get the slots from the working days with the range of slot days
   while (workingDayCount < appointmentConfig.slot_days_range) {
     const currentDay = nowMoment.clone().add(offset++, 'days');
     const dayKey = getDayKeyFromDate(currentDay.toDate());
@@ -100,22 +95,18 @@ export function generateAppointmentSlots({
           end: startMin + appointmentDuration,
         };
 
-        // for today, skip slots that have already passed or don't meet lead time
         if (isToday) {
-          // skip slots that have already ended
           if (slot.end <= nowMinutes) {
             startMin = slot.end + bufferTime;
             continue;
           }
 
-          // skip slots that don't meet the minimum lead time requirement
           if (slot.start < minMinutesAhead) {
             startMin = slot.end + bufferTime;
             continue;
           }
         }
 
-        // check if this slot overlaps with any unavailable time or already booked appointments
         const hasConflict =
           unavTimes.some((unav) =>
             overlaps(slot, {
@@ -124,19 +115,17 @@ export function generateAppointmentSlots({
             }),
           ) || bookedTimes.some((appt) => overlaps(slot, appt));
 
-        // psuh the time slot if there's no conflict
         if (!hasConflict) {
           const slotString = `${minutesToTime(slot.start)} - ${minutesToTime(
             slot.end,
           )}`;
           slotsForDay.push(slotString);
         }
-        // proceed to the next time slot
+
         startMin = slot.end + bufferTime;
       }
     }
 
-    // if there are slots for this day, save them
     if (slotsForDay.length) {
       slots[dateStr] = slotsForDay;
       workingDayCount++;
