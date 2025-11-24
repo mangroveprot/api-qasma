@@ -3,7 +3,7 @@ export const NotificationType = {
   AppointmentRescheduled: 'APPOINTMENT_RESCHEDULED',
   AppointmentConfirmed: 'APPOINTMENT_CONFIRMED',
   AppointmentCompleted: 'APPOINTMENT_COMPLETED',
-  CheckInReminder: 'CHECK_IN_REMINDER',
+  General: 'GENERAL',
 } as const;
 
 export type TNotificationType =

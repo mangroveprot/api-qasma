@@ -53,7 +53,7 @@ class AppointmentService extends BaseService<
     payload: any,
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
-      const idNumber = payload.studentId; // get the student id as notation like this to match the user model
+      const idNumber = payload.studentId;
       const userResponse = (await UserService.findOne({
         idNumber,
       })) as SuccessResponseType<IUserModel>;
@@ -78,6 +78,33 @@ class AppointmentService extends BaseService<
 
       if (!createAppointmentRes.success || !createAppointmentRes.document) {
         throw createAppointmentRes.error;
+      }
+
+      const staffResponse = await UserService.findAll({
+        query: { role: Role.Staff },
+      });
+
+      if (
+        staffResponse.success &&
+        (staffResponse as SuccessResponseType<IUserModel>).documents
+      ) {
+        const staffMembers =
+          (staffResponse as SuccessResponseType<IUserModel>).documents || [];
+        const staffIdNumbers = staffMembers.map((staff) => staff.idNumber);
+
+        if (staffIdNumbers.length > 0) {
+          await NotificationService.queueNotification({
+            idNumbers: staffIdNumbers,
+            type: 'GENERAL',
+            title: 'New Appointment Created',
+            body: `A new appointment has been scheduled by student ${userResponse.document.idNumber}`,
+            data: {
+              appointmentId: createAppointmentRes.document.appointmentId,
+              studentId: createAppointmentRes.document.studentId,
+              scheduledStartAt: createAppointmentRes.document.scheduledStartAt,
+            },
+          });
+        }
       }
 
       return {
@@ -289,6 +316,21 @@ class AppointmentService extends BaseService<
           body: notification.body,
           data: notification.data,
         });
+
+        if (counselorId) {
+          await NotificationService.queueNotification({
+            idNumbers: [counselorId],
+            type: 'GENERAL',
+            title: 'New Appointment Assigned',
+            body: `You have been assigned to a new appointment with student ${studentId}`,
+            data: {
+              appointmentId: updateResponse.document.appointmentId,
+              studentId: updateResponse.document.studentId,
+              counselorId: updateResponse.document.counselorId,
+              scheduledStartAt: updateResponse.document.scheduledStartAt,
+            },
+          });
+        }
       }
 
       return {
