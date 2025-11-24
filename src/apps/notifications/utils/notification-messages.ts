@@ -72,22 +72,6 @@ export class NotificationMessages {
     };
   }
 
-  static buildCheckInReminderNotification(appointment: IAppointmentModel) {
-    const { time } = this.formatDateTime(appointment.scheduledStartAt);
-
-    return {
-      type: NotificationType.CheckInReminder,
-      title: 'Appointment Starting Soon',
-      body: `The appointment starts in 30 minutes at ${time}. Please check in.`,
-      data: {
-        appointmentId: appointment.appointmentId,
-        scheduledStartAt: appointment.scheduledStartAt.toISOString(),
-        scheduledEndAt: appointment.scheduledEndAt.toISOString(),
-        minutesUntilStart: 30,
-      },
-    };
-  }
-
   static buildCompletedNotification(appointment: IAppointmentModel) {
     const { date, time } = this.formatDateTime(appointment.scheduledStartAt);
 
@@ -106,6 +90,19 @@ export class NotificationMessages {
         checkInTime: appointment.checkInTime?.toISOString(),
         status: appointment.status,
       },
+    };
+  }
+
+  static buildGeneralNotification(
+    title: string,
+    body: string,
+    data?: Record<string, any>,
+  ) {
+    return {
+      type: NotificationType.General,
+      title: title,
+      body: body,
+      data: data || {},
     };
   }
 }

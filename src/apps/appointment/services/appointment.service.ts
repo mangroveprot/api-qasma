@@ -93,16 +93,22 @@ class AppointmentService extends BaseService<
         const staffIdNumbers = staffMembers.map((staff) => staff.idNumber);
 
         if (staffIdNumbers.length > 0) {
-          await NotificationService.queueNotification({
-            idNumbers: staffIdNumbers,
-            type: 'GENERAL',
-            title: 'New Appointment Created',
-            body: `A new appointment has been scheduled by student ${userResponse.document.idNumber}`,
-            data: {
+          const notification = NotificationMessages.buildGeneralNotification(
+            'New Appointment Created',
+            `A new appointment has been scheduled by student ${userResponse.document.idNumber}`,
+            {
               appointmentId: createAppointmentRes.document.appointmentId,
               studentId: createAppointmentRes.document.studentId,
               scheduledStartAt: createAppointmentRes.document.scheduledStartAt,
             },
+          );
+
+          await NotificationService.queueNotification({
+            idNumbers: staffIdNumbers,
+            type: notification.type,
+            title: notification.title,
+            body: notification.body,
+            data: notification.data,
           });
         }
       }
@@ -318,17 +324,23 @@ class AppointmentService extends BaseService<
         });
 
         if (counselorId) {
-          await NotificationService.queueNotification({
-            idNumbers: [counselorId],
-            type: 'GENERAL',
-            title: 'New Appointment Assigned',
-            body: `You have been assigned to a new appointment with student ${studentId}`,
-            data: {
+          const notification = NotificationMessages.buildGeneralNotification(
+            'New Appointment Assigned',
+            `You have been assigned to a new appointment with student ${studentId}`,
+            {
               appointmentId: updateResponse.document.appointmentId,
               studentId: updateResponse.document.studentId,
               counselorId: updateResponse.document.counselorId,
               scheduledStartAt: updateResponse.document.scheduledStartAt,
             },
+          );
+
+          await NotificationService.queueNotification({
+            idNumbers: [counselorId],
+            type: notification.type,
+            title: notification.title,
+            body: notification.body,
+            data: notification.data,
           });
         }
       }
