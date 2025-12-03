@@ -123,7 +123,16 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
       let searchQuery = this.filterQueryFields(query);
 
       if (lastSynced) {
-        searchQuery.updatedAt = { $gt: new Date(lastSynced) };
+        const syncDate = new Date(lastSynced);
+
+        if (includeDeleted) {
+          searchQuery.$or = [
+            { updatedAt: { $gte: syncDate } },
+            { deletedAt: { $gte: syncDate } },
+          ];
+        } else {
+          searchQuery.updatedAt = { $gte: syncDate };
+        }
       }
 
       if (searchTerm && this.searchFields?.length) {
@@ -213,6 +222,36 @@ export class BaseService<T extends Document, R extends BaseRepository<T>> {
         );
       }
       return { success: true, document: updatedDocument };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('DATABASE_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async delete(
+    query: Record<string, any>,
+    softDelete = true,
+  ): Promise<SuccessResponseType<T> | ErrorResponseType> {
+    try {
+      const deletedDocument = await this.repository.delete(
+        query,
+        {},
+        softDelete,
+      );
+      if (!deletedDocument) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          softDelete
+            ? 'Document to soft delete not found.'
+            : 'Document to delete not found.',
+        );
+      }
+      return { success: true, document: deletedDocument };
     } catch (error) {
       return {
         success: false,

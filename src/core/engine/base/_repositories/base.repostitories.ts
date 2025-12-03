@@ -27,7 +27,9 @@ export class BaseRepository<T extends Document> {
     const effectiveQuery = includeDeleted
       ? query
       : { ...query, deletedAt: null };
-    return await this.model.find(effectiveQuery, null, options).exec();
+    return await this.model
+      .find(effectiveQuery, null, { ...options, includeDeleted })
+      .exec();
   }
 
   async findOne(
@@ -53,6 +55,18 @@ export class BaseRepository<T extends Document> {
     return await this.model
       .findOneAndUpdate(effectiveQuery, update, { new: true, ...options })
       .exec();
+  }
+
+  async updateMany(
+    query: FilterQuery<T>,
+    update: UpdateQuery<T>,
+    includeDeleted = false,
+  ): Promise<{ modifiedCount: number }> {
+    const effectiveQuery = includeDeleted
+      ? query
+      : { ...query, deletedAt: null };
+    const result = await this.model.updateMany(effectiveQuery, update).exec();
+    return { modifiedCount: result.modifiedCount || 0 };
   }
 
   async delete(

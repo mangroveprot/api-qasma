@@ -5,14 +5,12 @@ let firebaseApp: admin.app.App | null = null;
 
 function init(): void {
   try {
-    // Check if Firebase is already initialized
     if (admin.apps.length > 0) {
       firebaseApp = admin.apps[0];
       console.info('Firebase Admin already initialized');
       return;
     }
 
-    // Initialize Firebase Admin
     firebaseApp = admin.initializeApp({
       credential: admin.credential.cert({
         projectId: config.firebase.projectId,
@@ -23,13 +21,11 @@ function init(): void {
 
     console.info('Firebase Admin initialized successfully');
   } catch (error) {
-    // Use console.error as fallback since logger might not be ready yet
     const err = error instanceof Error ? error : new Error(String(error));
     console.error('Failed to initialize Firebase Admin:', err.message);
     if (err.stack) {
       console.error(err.stack);
     }
-    // Don't throw - allow service to be created but mark as uninitialized
     firebaseApp = null;
   }
 }
@@ -42,16 +38,14 @@ function getApp(): admin.app.App {
 }
 
 class FCMService {
-  constructor() {
-    // Don't initialize here - follow Redis pattern
-  }
-
   private ensureInitialized(): void {
     if (!firebaseApp) {
       init();
     }
     if (!firebaseApp) {
-      throw new Error('Firebase Admin not initialized. Please check your Firebase configuration.');
+      throw new Error(
+        'Firebase Admin not initialized. Please check your Firebase configuration.',
+      );
     }
   }
 
@@ -70,7 +64,6 @@ class FCMService {
       this.ensureInitialized();
       const app = getApp();
 
-      // Convert all data values to strings (FCM requirement)
       const stringifiedData: Record<string, string> = {};
       for (const key in data) {
         stringifiedData[key] =

@@ -53,10 +53,11 @@ class AppointmentController {
         query,
         lastSynced: lastSynced,
         paginate: false,
+        includeDeleted: true,
       });
 
       if (response.success) {
-        ApiResponse.success(res, response, 201);
+        ApiResponse.success(res, response, 200);
       } else {
         throw response;
       }
@@ -92,9 +93,9 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { studentId } = req.params;
+      const idNumber = (req as any).payload?.aud as string;
       const response = await AppointmentService.findAll({
-        query: { studentId },
+        query: { studentId: idNumber },
       });
 
       if (response.success) {
@@ -204,6 +205,23 @@ class AppointmentController {
       const response = await AppointmentService.checkCounselorAvailability(
         req.body,
       );
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async reminders(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.sendAppointmentReminders();
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

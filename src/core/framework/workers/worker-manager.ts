@@ -26,8 +26,35 @@ class WorkerManager {
       console.info(`[${queueName}] Job ${job.id} completed`);
     });
 
-    worker.on('failed', (job, err) => {
-      console.error(`[${queueName}] Job ${job?.id} failed:`, err);
+    worker.on('failed', async (job, err) => {
+      if (!job) return;
+
+      console.error(
+        `[${queueName}] Job ${job.id} failed after ${job.attemptsMade} attempts:`,
+        err,
+      );
+
+      // If max attempts reached, permanently remove the job
+      const maxAttempts = job.opts.attempts || 3;
+      if (job.attemptsMade >= maxAttempts) {
+        console.error(
+          `[${queueName}] Job ${job.id} exceeded max attempts (${maxAttempts}). Removing from queue.`,
+        );
+
+        try {
+          await job.remove();
+          console.info(`[${queueName}] Job ${job.id} permanently removed`);
+        } catch (removeErr) {
+          console.error(
+            `[${queueName}] Failed to remove job ${job.id}:`,
+            removeErr,
+          );
+        }
+      }
+    });
+
+    worker.on('error', (err) => {
+      console.error(`[${queueName}] Worker error:`, err);
     });
 
     this.workers.set(queueName, worker);
@@ -40,7 +67,16 @@ class WorkerManager {
     if (!this.queues.has(queueName)) {
       const queue = new Queue(queueName, {
         connection: config.bullmq.connection,
-        defaultJobOptions: jobOptions,
+        defaultJobOptions: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 1000,
+          },
+          removeOnComplete: true,
+          removeOnFail: true, // CHANGED: Auto-remove failed jobs after max attempts
+          ...jobOptions,
+        },
       });
 
       queue.on('error', (error) => {
@@ -78,17 +114,27 @@ class WorkerManager {
   }
 
   async closeAll(): Promise<void> {
+    const closePromises: Promise<void>[] = [];
+
     for (const [queueName, worker] of this.workers.entries()) {
-      await worker.close();
-      console.info(`Worker closed: ${queueName}`);
+      closePromises.push(
+        worker.close().then(() => {
+          console.info(`Worker closed: ${queueName}`);
+        }),
+      );
     }
     this.workers.clear();
 
     for (const [queueName, queue] of this.queues.entries()) {
-      await queue.close();
-      console.info(`Queue closed: ${queueName}`);
+      closePromises.push(
+        queue.close().then(() => {
+          console.info(`Queue closed: ${queueName}`);
+        }),
+      );
     }
     this.queues.clear();
+
+    await Promise.all(closePromises);
   }
 }
 

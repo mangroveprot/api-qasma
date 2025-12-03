@@ -22,6 +22,7 @@ const AppointmentSchema = createBaseSchema<IAppointmentModel>(
     appointmentType: { type: String, required: true },
     description: { type: String, required: true },
     feedbackSubmitted: { type: Boolean, default: false },
+    reminderSent: { type: Boolean, default: false },
     status: {
       type: String,
       enum: [...Object.values(Status)],

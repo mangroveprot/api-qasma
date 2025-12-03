@@ -26,7 +26,7 @@ router.post(
 );
 
 router.get(
-  '/getAllByUser/:studentId',
+  '/getAllByUser/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Student),
   AppointmentController.getAllAppointmentByUser,
@@ -91,5 +91,7 @@ router.post(
   validate(counselorAvailabilitySchema),
   AppointmentController.counselorAvailability,
 );
+
+router.get('/reminder/', AppointmentController.reminders);
 
 export default router;

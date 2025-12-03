@@ -60,12 +60,31 @@ export class NotificationProcessorService {
           `Notification sent successfully: ${notificationId} -> ${fcmResponse.messageId}`,
         );
         return { success: true, messageId: fcmResponse.messageId };
-      } else {
-        console.error(
-          `Failed to send notification: ${notificationId} -> ${fcmResponse.error}`,
-        );
-        throw new Error(fcmResponse.error);
       }
+
+      const errorMessage = fcmResponse.error || 'Unknown FCM error';
+      console.error(
+        `Failed to send notification: ${notificationId} -> ${errorMessage}`,
+      );
+
+      if (errorMessage.includes('Requested entity was not found')) {
+        const clearTokenResponse = await UserService.update(
+          { idNumber: notification.idNumber },
+          { fcmToken: null } as any,
+        );
+
+        if (clearTokenResponse.success) {
+          console.warn(
+            `Cleared stale FCM token for user ${notification.idNumber} after FCM reported missing entity`,
+          );
+        } else {
+          console.warn(
+            `Failed to clear FCM token for user ${notification.idNumber}: ${clearTokenResponse.error?.message}`,
+          );
+        }
+      }
+
+      return { success: false, reason: errorMessage };
     } catch (error) {
       console.error(`Error processing notification: ${notificationId}`, error);
       throw error;

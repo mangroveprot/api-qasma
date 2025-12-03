@@ -24,6 +24,7 @@ import moment from 'moment';
 import { checkAvailableCounselorsForTimeSlot } from '../../../helpers/checkAvailableCounselorsForTimeSlot';
 import { NotificationService } from '../../notifications/services';
 import { NotificationMessages } from '../../notifications/utils';
+import { config } from '../../../core/config';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -32,21 +33,29 @@ class AppointmentService extends BaseService<
   constructor() {
     const appointmentRepo = new AppointmentRepository(AppointmentModel);
     super(appointmentRepo);
-    this.allowedFilterFields = ['status', 'updatedAt', 'studentId']; // for safety searching
+    this.allowedFilterFields = [
+      'status',
+      'updatedAt',
+      'studentId',
+      'reminderSent',
+    ]; // for safety searching
   }
 
-  private getAppointmentUserIds(appointment: IAppointmentModel): string[] {
-    const userIds: string[] = [appointment.studentId];
+  private getAppointmentUserIds(
+    appointment: IAppointmentModel,
+    include: (typeof Role)[keyof typeof Role][] = [
+      Role.Student,
+      Role.Counselor,
+      Role.Staff,
+    ],
+  ): string[] {
+    const userMap = {
+      [Role.Student]: appointment.studentId,
+      [Role.Counselor]: appointment.counselorId,
+      [Role.Staff]: appointment.staffId,
+    };
 
-    if (appointment.counselorId) {
-      userIds.push(appointment.counselorId);
-    }
-
-    if (appointment.staffId) {
-      userIds.push(appointment.staffId);
-    }
-
-    return userIds;
+    return include.map((role) => userMap[role]).filter(Boolean) as string[];
   }
 
   async createAppointment(
@@ -72,9 +81,10 @@ class AppointmentService extends BaseService<
         );
       }
 
-      const createAppointmentRes = (await this.create(
-        payload,
-      )) as SuccessResponseType<IAppointmentModel>;
+      const createAppointmentRes = (await this.create({
+        ...payload,
+        reminderSent: false,
+      })) as SuccessResponseType<IAppointmentModel>;
 
       if (!createAppointmentRes.success || !createAppointmentRes.document) {
         throw createAppointmentRes.error;
@@ -169,7 +179,10 @@ class AppointmentService extends BaseService<
 
       const updateResponse = (await this.update(
         { appointmentId },
-        { ...restPayload },
+        {
+          ...restPayload,
+          reminderSent: isReschedule ? false : restPayload.reminderSent,
+        },
       )) as SuccessResponseType<IAppointmentModel>;
 
       if (!updateResponse.success) {
@@ -209,11 +222,12 @@ class AppointmentService extends BaseService<
     }
   }
 
+  // need to optimize
   async cancelAppointment(
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const { appointmentId, ...newPayload } = payload;
+      const { appointmentId, cancellation } = payload;
       const appointmentResponse = (await this.findOne({
         appointmentId,
       })) as SuccessResponseType<IAppointmentModel>;
@@ -225,22 +239,52 @@ class AppointmentService extends BaseService<
         );
       }
 
-      const updateResponse = (await this.update(
-        { appointmentId },
-        { ...newPayload, status: Status.Cancelled },
-      )) as SuccessResponseType<IAppointmentModel>;
+      let operationResponse;
+      const appointment = appointmentResponse.document;
 
-      if (!updateResponse.success) {
-        throw updateResponse.error;
-      }
+      if (appointment.status == Status.Pending) {
+        const updateResponse = (await this.update(
+          { appointmentId: appointment.appointmentId },
+          {
+            status: Status.Cancelled,
+            cancellation,
+          },
+        )) as SuccessResponseType<IAppointmentModel>;
 
-      // cancellation notification
-      if (updateResponse.document) {
-        const notification = NotificationMessages.buildCancelledNotification(
-          updateResponse.document,
+        if (!updateResponse.success) {
+          throw updateResponse.error;
+        }
+
+        const deleteResponse = await this.delete(
+          { appointmentId: appointment.appointmentId },
+          true,
         );
 
-        const userIds = this.getAppointmentUserIds(updateResponse.document);
+        if (!deleteResponse.success) {
+          throw deleteResponse.error;
+        }
+
+        operationResponse = updateResponse;
+      } else {
+        operationResponse = (await this.update(
+          { appointmentId: appointment.appointmentId },
+          {
+            status: Status.Cancelled,
+            cancellation,
+          },
+        )) as SuccessResponseType<IAppointmentModel>;
+
+        if (!operationResponse.success) {
+          throw operationResponse.error;
+        }
+      }
+
+      if (operationResponse.document) {
+        const notification = NotificationMessages.buildCancelledNotification(
+          operationResponse.document,
+        );
+
+        const userIds = this.getAppointmentUserIds(operationResponse.document);
 
         await NotificationService.queueNotification({
           idNumbers: userIds,
@@ -450,7 +494,9 @@ class AppointmentService extends BaseService<
       const [appointmentConfigRes, counselorRes, appointmentRes] =
         await Promise.all([
           AppoinmentConfigService.findOne({}),
-          UserService.findAll({ query: { role: Role.Counselor } }),
+          UserService.findAll({
+            query: { role: Role.Counselor, verified: true, active: true },
+          }),
           this.findAll(),
         ]);
 
@@ -479,9 +525,9 @@ class AppointmentService extends BaseService<
         );
       }
 
-      const allUnavailable: UnavailableTimes[] = counselors
-        .filter((counselor) => counselor.other_info) // filter counselor doesnt have otherinfo
-        .map((counselor) => counselor.other_info.unavailableTimes);
+      const allUnavailable: UnavailableTimes[] = counselors.map(
+        (counselor) => counselor.other_info?.unavailableTimes,
+      );
 
       // get the current and upcoming appointments and also must be approved or pending
       const upcomingAppointments = appointments.filter((appointment) => {
@@ -493,11 +539,8 @@ class AppointmentService extends BaseService<
         return isStatusValid && scheduledAt.isSameOrAfter(getDateTime());
       });
 
-      const mergedAllCounselorTime =
-        mergedCounselorsUnavailableTimes(allUnavailable);
-
       const getAvailableSlots = generateAppointmentSlots({
-        unavailableTimes: mergedAllCounselorTime,
+        unavailableTimes: allUnavailable,
         appointmentDuration: appointmentDuration,
         existingAppointments: upcomingAppointments,
         appointmentConfig: appointmentConfig,
@@ -521,7 +564,9 @@ class AppointmentService extends BaseService<
     try {
       const { scheduledStartAt, scheduledEndAt } = payload;
       const [counselorRes, appointmentRes] = await Promise.all([
-        UserService.findAll({ query: { role: Role.Counselor } }),
+        UserService.findAll({
+          query: { role: Role.Counselor, verified: true, active: true },
+        }),
         this.findAll(),
       ]);
 
@@ -558,6 +603,93 @@ class AppointmentService extends BaseService<
       return {
         success: true,
         documents: availableCounselors,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async sendAppointmentReminders(): Promise<
+    SuccessResponseType<any> | ErrorResponseType
+  > {
+    try {
+      const now = getDateTime();
+      const nowMoment = moment(now).tz(config.timeZone);
+      const oneHourFromNow = nowMoment.clone().add(1, 'hour');
+
+      const reminderWindowStart = oneHourFromNow.clone().subtract(5, 'minutes');
+      const reminderWindowEnd = oneHourFromNow.clone().add(5, 'minutes');
+
+      const appointmentsResponse = (await this.findAll({
+        query: {
+          status: Status.Approved,
+          scheduledStartAt: {
+            $gte: reminderWindowStart.toDate(),
+            $lte: reminderWindowEnd.toDate(),
+          },
+          reminderSent: { $ne: true },
+        },
+      })) as SuccessResponseType<IAppointmentModel>;
+
+      if (
+        !appointmentsResponse.success ||
+        !appointmentsResponse.documents ||
+        appointmentsResponse.documents.length === 0
+      ) {
+        return {
+          success: true,
+          document: { message: 'No appointments to remind', count: 0 },
+        };
+      }
+
+      const appointmentsToRemind = appointmentsResponse.documents;
+
+      await Promise.all(
+        appointmentsToRemind.map(async (appointment) => {
+          await this.update(
+            { appointmentId: appointment.appointmentId },
+            { reminderSent: true },
+          );
+
+          const appointmentTime = moment(appointment.scheduledStartAt)
+            .tz(config.timeZone)
+            .format('h:mm A');
+
+          const notification = NotificationMessages.buildGeneralNotification(
+            'Appointment Reminder',
+            `Your appointment starts in 1 hour at ${appointmentTime}`,
+            {
+              appointmentId: appointment.appointmentId,
+              studentId: appointment.studentId,
+              counselorId: appointment.counselorId,
+              scheduledStartAt: appointment.scheduledStartAt,
+            },
+          );
+
+          const userIds = this.getAppointmentUserIds(appointment, [Role.Staff]);
+
+          await NotificationService.queueNotification({
+            idNumbers: userIds,
+            type: notification.type,
+            title: notification.title,
+            body: notification.body,
+            data: notification.data,
+          });
+        }),
+      );
+
+      return {
+        success: true,
+        document: {
+          message: 'Reminders sent successfully',
+          count: appointmentsToRemind.length,
+        },
       };
     } catch (error) {
       return {

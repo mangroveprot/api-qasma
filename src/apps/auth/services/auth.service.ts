@@ -192,7 +192,7 @@ class AuthService {
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
           'NOT_FOUND_ERROR',
-          'This ID number is not register.',
+          'This ID number is not registered.',
         );
       }
 

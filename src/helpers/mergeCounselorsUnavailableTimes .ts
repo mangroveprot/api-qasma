@@ -22,42 +22,98 @@ export function mergedCounselorsUnavailableTimes(
 ): Record<string, WorkingSession[]> {
   const result: Record<string, WorkingSession[]> = {};
 
+  if (allUnavailable.length === 0) {
+    return result;
+  }
+
+  if (allUnavailable.length === 1) {
+    return allUnavailable[0];
+  }
+
   for (const day of Days) {
-    const allRanges: { start: number; end: number }[] = [];
+    const hasFullyAvailableCounselor = allUnavailable.some(
+      (counselor) => !counselor[day] || counselor[day].length === 0,
+    );
 
-    for (const counselorUnavailable of allUnavailable) {
-      const sessions = counselorUnavailable[day] ?? [];
-
-      for (const range of sessions) {
-        allRanges.push({
-          start: timeStringToMinutes(range.start),
-          end: timeStringToMinutes(range.end),
-        });
-      }
+    if (hasFullyAvailableCounselor) {
+      continue;
     }
 
-    const merged: WorkingSession[] = [];
+    const allCounselorRangesForDay = allUnavailable.map(
+      (counselor) => counselor[day] || [],
+    );
 
-    if (allRanges.length > 0) {
-      const sorted = allRanges.sort((a, b) => a.start - b.start);
+    const intersection = findIntersectionOfTimeRanges(allCounselorRangesForDay);
 
-      for (const range of sorted) {
-        const last = merged[merged.length - 1];
-        if (!last || range.start > timeStringToMinutes(last.end)) {
-          merged.push({
-            start: minutesToTime(range.start),
-            end: minutesToTime(range.end),
-          });
-        } else {
-          last.end = minutesToTime(
-            Math.max(timeStringToMinutes(last.end), range.end),
-          );
-        }
-      }
-
-      result[day] = merged;
+    if (intersection.length > 0) {
+      result[day] = intersection;
     }
   }
 
   return result;
+}
+
+function findIntersectionOfTimeRanges(
+  allRanges: WorkingSession[][],
+): WorkingSession[] {
+  if (
+    allRanges.length === 0 ||
+    allRanges.some((ranges) => ranges.length === 0)
+  ) {
+    return [];
+  }
+
+  let intersection = allRanges[0].map((range) => ({
+    start: timeStringToMinutes(range.start),
+    end: timeStringToMinutes(range.end),
+  }));
+
+  for (let i = 1; i < allRanges.length; i++) {
+    const currentRanges = allRanges[i].map((range) => ({
+      start: timeStringToMinutes(range.start),
+      end: timeStringToMinutes(range.end),
+    }));
+
+    const overlaps: { start: number; end: number }[] = [];
+
+    for (const r1 of intersection) {
+      for (const r2 of currentRanges) {
+        const overlapStart = Math.max(r1.start, r2.start);
+        const overlapEnd = Math.min(r1.end, r2.end);
+
+        if (overlapStart < overlapEnd) {
+          overlaps.push({ start: overlapStart, end: overlapEnd });
+        }
+      }
+    }
+
+    intersection = overlaps;
+
+    if (intersection.length === 0) break;
+  }
+
+  if (intersection.length === 0) return [];
+
+  const sorted = intersection.sort((a, b) => a.start - b.start);
+  const merged: WorkingSession[] = [];
+  let current = sorted[0];
+
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].start <= current.end) {
+      current.end = Math.max(current.end, sorted[i].end);
+    } else {
+      merged.push({
+        start: minutesToTime(current.start),
+        end: minutesToTime(current.end),
+      });
+      current = sorted[i];
+    }
+  }
+
+  merged.push({
+    start: minutesToTime(current.start),
+    end: minutesToTime(current.end),
+  });
+
+  return merged;
 }

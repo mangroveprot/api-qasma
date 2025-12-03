@@ -18,6 +18,7 @@ export interface IAppointment {
   staffId?: string;
   counselorId?: string;
   feedbackSubmitted?: boolean;
+  reminderSent?: boolean;
   reschedule?: {
     rescheduledBy: string;
     remarks: string;

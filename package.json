@@ -37,6 +37,7 @@
     "typescript-eslint": "^8.27.0"
   },
   "dependencies": {
+    "@types/node-cron": "^3.0.11",
     "async_hooks": "^1.0.0",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
@@ -58,6 +59,7 @@
     "moment-timezone": "^0.6.0",
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.3",
     "uuid": "^11.1.0",
     "winston": "^3.17.0"

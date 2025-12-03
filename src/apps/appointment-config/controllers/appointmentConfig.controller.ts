@@ -73,7 +73,7 @@ class AppointmentConfigController {
         lastSynced: lastSynced,
       });
       if (response.success) {
-        ApiResponse.success(res, response, 201);
+        ApiResponse.success(res, response, 200);
       } else {
         throw response;
       }
