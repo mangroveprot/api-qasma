@@ -49,7 +49,7 @@ export const registerSchema = Joi.object({
 export const newUser = Joi.object({
   idNumber: Joi.string().required(),
   email: Joi.string().email().optional().allow('', null),
-  password: Joi.string().min(8).required(),
+  password: Joi.string().min(6).required(),
   role: Joi.string().valid(Role.Counselor, Role.Staff, Role.Student).required(),
   verified: Joi.boolean().required(),
   active: Joi.boolean().required(),

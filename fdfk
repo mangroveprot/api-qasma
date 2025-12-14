@@ -1,0 +1,329 @@
+[33mcommit 9a4b8423227fff3aefe789a3da425dd425621c2e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrender-test-deploy[m[33m, [m[1;31morigin/render-test-deploy[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Dec 3 09:32:39 2025 +0800
+
+    test of new user
+
+[33mcommit 1f94733aad3ae72aa643afc86ec8e898eddb7dba[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Dec 3 09:18:14 2025 +0800
+
+    adding auto reminder in appointment in hour
+
+[33mcommit 66cddf40b28c7427530a3cbfbd79d75e76bc0cc7[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Nov 24 10:52:20 2025 +0800
+
+    fix general notificaiton messages
+
+[33mcommit 5a2799912014047521372dabcad21cb79e2c8437[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Nov 24 10:30:22 2025 +0800
+
+    add general remainder
+
+[33mcommit f7eeea8a29cce82554f5aed46d221ac388bb56fc[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Sun Nov 23 19:53:07 2025 +0800
+
+    add notifcations deletion
+
+[33mcommit 5f8e11d110859aca3b06b5cdab408aca98ddbb5c[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Nov 21 15:29:21 2025 +0800
+
+    fix logout bugs
+
+[33mcommit 2b10d8b12235d4e5270072b74189d73922479e65[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Nov 20 18:28:18 2025 +0800
+
+    fix templates html direct link
+
+[33mcommit 8249a2a6f751d557243afa4f404bcc3ab55f4476[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Nov 20 18:20:46 2025 +0800
+
+    fix email spam
+
+[33mcommit 660a0b9593fbce6ca16b3bd8612a08d1c202247a[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Nov 19 13:06:49 2025 +0800
+
+    adding fcm service
+
+[33mcommit d05b84f9885c7beaf1e4980b0ea919369a3a3804[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Oct 15 19:08:39 2025 +0800
+
+    added new fields on models in appointment
+
+[33mcommit 6a03e05d0569c003768e2e32207cb2970be18372[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Oct 6 22:49:31 2025 +0800
+
+    fixed allUnavailble in appointmentservice to filter no other info
+
+[33mcommit 6efffb9b051c74e57f8fd03670a9914998eaae63[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Oct 6 22:22:50 2025 +0800
+
+    fixed get slots, if counselor doesnt have otherInfo
+
+[33mcommit 7502844daf9773a36e898e90eadd6933fa19ed5d[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Oct 6 14:18:49 2025 +0800
+
+    fixed OTP time duration
+
+[33mcommit c0e6f36dee4a5ae824979dea04615ef940d04bde[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Oct 6 13:24:49 2025 +0800
+
+    add new mail strategy whether api or smtp
+
+[33mcommit 00fe466964fbfd8354a2b8d6f6f05257e2258012[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Sun Sep 14 19:07:45 2025 +0800
+
+    fix commented code in verify appointment
+
+[33mcommit 0d7165c2f1a76410c6bee7f66c2a270b9ab9545f[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Sun Sep 14 18:22:56 2025 +0800
+
+    fix qr validations
+
+[33mcommit b250a85a5f0833e9a72fbb08db6d74a44e0a3193[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Sep 1 10:27:01 2025 +0800
+
+    update the user validation schema
+
+[33mcommit 3449c48b9ac5a9a2a02683fee3e2a8ab5ffb12ae[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Aug 13 15:22:09 2025 +0800
+
+    8/13/2025
+
+[33mcommit e078207adb368bd2afb92b7ccbc15374d406e874[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Aug 12 18:08:01 2025 +0800
+
+    fix verfication template
+
+[33mcommit 38325bf775f49b00fd0a2a7317052373d8fa28d6[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Aug 8 15:56:40 2025 +0800
+
+    make the webp file to copy as well in build
+
+[33mcommit ae2927f9d06f1f1d623834d4cec464e94da90ab9[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Aug 8 15:38:11 2025 +0800
+
+    made some changes
+
+[33mcommit e602a1752fb05c2979a0f5e83990d85a3d96c365[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jul 16 16:50:41 2025 +0800
+
+    add isRegister
+
+[33mcommit ad5218bd23d21bf225bceeeea4647fd6d3dc1b14[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jul 14 13:51:11 2025 +0800
+
+    5
+
+[33mcommit fb52dd4b47baed0b9975d78661b78f94a3dcb0cc[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jul 7 11:18:04 2025 +0800
+
+    update readme.md
+
+[33mcommit 112a82342fd6500a5c1222fd134ecb0bbb983cb7[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jul 7 11:16:16 2025 +0800
+
+    Update README.md
+
+[33mcommit eaa2137e7c1afc2b92e5f476c2a87197c03090e3[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 13:46:36 2025 +0800
+
+    5
+
+[33mcommit 73563f30b8c0d48eeddce0d85085c41c335931c1[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 13:27:15 2025 +0800
+
+    4
+
+[33mcommit 5dedf46706973c2a1bb2bd8cf4597e9cfc67a3c7[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 12:01:53 2025 +0800
+
+    3
+
+[33mcommit 237d269f4b45dd9262e208119d151b0508d57815[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 11:08:29 2025 +0800
+
+    2
+
+[33mcommit d3fd05af4a9df156b4af9d21a367eb262643cef6[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 11:03:45 2025 +0800
+
+    1
+
+[33mcommit 558b34ecf00e6440077bd9fec52263a9567747fc[m[33m ([m[1;32maddRender[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 10:51:15 2025 +0800
+
+    testing for render
+
+[33mcommit 1965edb2bab248510d6ccba98d4b5c5468b6414a[m[33m ([m[1;31morigin/addRender[m[33m, [m[1;32maddDocker[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jul 4 10:38:29 2025 +0800
+
+    add render.yaml for render configuration
+
+[33mcommit e827b287e78b9c0cc2c58e92ad12c8312c2b9b20[m[33m ([m[1;31morigin/addDocker[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Jul 3 15:46:23 2025 +0800
+
+    adding docker
+
+[33mcommit 853f1739e9d708b9e5fef4047a153970368b9086[m[33m ([m[1;32mtemp-save[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Jul 3 13:29:00 2025 +0800
+
+    Stop tracking .env file
+
+[33mcommit 8dee2b9539d0ec910f2ab60e24ee3ef228b93ec2[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Jul 3 13:25:22 2025 +0800
+
+    add docker
+
+[33mcommit 3a247063c273d9cd34ebade8ba80751b60f19713[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Jul 3 13:09:19 2025 +0800
+
+    add a not working docker
+
+[33mcommit 823ccf420ff5dd0473c7ef3ea5ba84ab97c0d47d[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jul 2 16:52:21 2025 +0800
+
+    adding docker but still error in production
+
+[33mcommit a3b00a8de37bcb7cd76c6ed3cb1dc7b6bfc480b2[m[33m ([m[1;31morigin/updateDocs[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Jul 1 11:43:57 2025 +0800
+
+    update docs.md
+
+[33mcommit 1eccb09be1e0d9c9e368f8341a76d53c976eeace[m[33m ([m[1;31morigin/addConfig[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Jul 1 11:23:28 2025 +0800
+
+    add generate slots
+
+[33mcommit a767a87d7f9cb66f2d6bad3dfadbcb4704dcbdf4[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 25 16:36:48 2025 +0800
+
+    UPDATE DOCS.MD
+
+[33mcommit 042a21aee9378b3334b5d370ed9a31dd072679eb[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 25 16:34:18 2025 +0800
+
+    update docs.md
+
+[33mcommit 40b6ed80c8a0a36b5ec065d491217a7fb1166f97[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 25 14:12:34 2025 +0800
+
+    Update DOCS.md
+
+[33mcommit cb065d5e42da496f8f20bbc87240c3f26cb25973[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 25 14:10:52 2025 +0800
+
+    Update DOCS.md
+
+[33mcommit 62c01297e6856b791ce00e90ae3bbe3ab3b8cb43[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Jun 24 16:47:09 2025 +0800
+
+    Add appointment config
+
+[33mcommit a0d39b6ec51d327f0103031260124244ac08fa49[m[33m ([m[1;31morigin/addAppointment[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Jun 24 14:40:42 2025 +0800
+
+    Add redis servic, Finish app appointments, add validations to other routes
+
+[33mcommit 69f3f6b94e440c17790ea74321c6da9616d24099[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jun 20 16:58:10 2025 +0800
+
+    add qrcode
+
+[33mcommit a2abd460885238e383e68eec37a6efa213250ddd[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Thu Jun 19 13:31:55 2025 +0800
+
+    add docker
+
+[33mcommit da166c31241232aeb841e45c0e17ea80d609599e[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 18 16:44:31 2025 +0800
+
+    Add appointment
+
+[33mcommit afcca820204351054dacd4209a8a39c538e22cf4[m[33m ([m[1;31morigin/addJWT[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Tue Jun 17 16:48:28 2025 +0800
+
+    Add JWT Auth | Role Based
+
+[33mcommit 0c7900fa773229611852560ff6e925940d8116f6[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jun 16 16:05:49 2025 +0800
+
+    Add validation schema
+
+[33mcommit c02df38a122e4d6a82fc2c7906aabfc242c046d7[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jun 16 10:11:31 2025 +0800
+
+    modify .gitignore
+
+[33mcommit 74a36197da51e071a8c8a5efc22234d1b54bdeed[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Mon Jun 16 10:05:32 2025 +0800
+
+    Stop tracking logs folder
+
+[33mcommit dac64153270789de3db6cb795898f8b28e33a3dc[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jun 13 16:05:00 2025 +0800
+
+    Changing a the UserModel for flexibility for its role
+
+[33mcommit c883c342627a27cab599e02ac8d8dd479f4c637d[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Fri Jun 13 08:36:07 2025 +0800
+
+    Fixed typo readme| add the lacking data in .env example
+
+[33mcommit 622ddce890da501824f55935fb83a6928db9a4bb[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: unknown <mangroveprot@gmail.com>
+Date:   Wed Jun 11 16:50:29 2025 +0800
+
+    first commit
