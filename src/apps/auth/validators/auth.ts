@@ -25,7 +25,7 @@ export const counselorInfoSchema = Joi.object({
 export const registerSchema = Joi.object({
   idNumber: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(8).required(),
+  password: Joi.string().min(6).required(),
   role: Joi.string().valid(Role.Counselor, Role.Staff, Role.Student).required(),
   first_name: Joi.string().required(),
   middle_name: Joi.string().optional().allow('', null),
