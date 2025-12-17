@@ -43,11 +43,7 @@ class AppointmentService extends BaseService<
 
   private getAppointmentUserIds(
     appointment: IAppointmentModel,
-    include: (typeof Role)[keyof typeof Role][] = [
-      Role.Student,
-      Role.Counselor,
-      Role.Staff,
-    ],
+    excludeRoles: (typeof Role)[keyof typeof Role][] = [],
   ): string[] {
     const userMap = {
       [Role.Student]: appointment.studentId,
@@ -55,7 +51,10 @@ class AppointmentService extends BaseService<
       [Role.Staff]: appointment.staffId,
     };
 
-    return include.map((role) => userMap[role]).filter(Boolean) as string[];
+    return (Object.keys(userMap) as (keyof typeof userMap)[])
+      .filter((role) => !excludeRoles.includes(role))
+      .map((role) => userMap[role])
+      .filter(Boolean) as string[];
   }
 
   async createAppointment(
@@ -658,7 +657,8 @@ class AppointmentService extends BaseService<
           );
 
           const appointmentTime = moment(appointment.scheduledStartAt)
-            .tz(config.timeZone)
+            .utc()
+            .tz(config.timeZone, true)
             .format('h:mm A');
 
           const notification = NotificationMessages.buildGeneralNotification(
