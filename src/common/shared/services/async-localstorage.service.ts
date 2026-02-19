@@ -27,6 +27,10 @@ export class AsyncStorageService {
     return store ? store.get(key) : undefined;
   }
 
+  public getStore(): Map<string, any> | undefined {
+    return this.storage.getStore();
+  }
+
   public run(callback: () => void, initialValue?: Map<string, any>) {
     this.storage.run(initialValue || new Map(), callback);
   }

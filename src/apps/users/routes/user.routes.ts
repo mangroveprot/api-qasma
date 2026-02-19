@@ -47,6 +47,13 @@ router.get(
   UserController.getCurrentUser,
 );
 
+router.get(
+  '/isActive',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  UserController.isActive,
+);
+
 router.get('/sync/:lastSynced/', UserController.sync);
 
 router.post(

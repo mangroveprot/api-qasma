@@ -25,6 +25,7 @@ import { checkAvailableCounselorsForTimeSlot } from '../../../helpers/checkAvail
 import { NotificationService } from '../../notifications/services';
 import { NotificationMessages } from '../../notifications/utils';
 import { config } from '../../../core/config';
+import { eventBus, AppointmentEvents } from '../../../common/shared/events';
 
 class AppointmentService extends BaseService<
   IAppointmentModel,
@@ -122,6 +123,11 @@ class AppointmentService extends BaseService<
         }
       }
 
+      eventBus.emit(AppointmentEvents.CREATED, {
+        userId: idNumber,
+        appointmentId: createAppointmentRes.document.appointmentId,
+      });
+
       return {
         success: true,
         document: {
@@ -203,6 +209,20 @@ class AppointmentService extends BaseService<
           title: notification.title,
           body: notification.body,
           data: notification.data,
+        });
+
+        eventBus.emit(AppointmentEvents.RESCHEDULED, {
+          userId: oldAppointment.studentId,
+          appointmentId: oldAppointment.appointmentId,
+          oldDate: {
+            start: oldAppointment.scheduledStartAt,
+            end: oldAppointment.scheduledEndAt,
+          },
+          newDate: {
+            start: updateResponse.document.scheduledStartAt,
+            end: updateResponse.document.scheduledEndAt,
+          },
+          reason: restPayload.reschedule?.remarks ?? null,
         });
       }
 
@@ -292,6 +312,12 @@ class AppointmentService extends BaseService<
           body: notification.body,
           data: notification.data,
         });
+
+        eventBus.emit(AppointmentEvents.CANCELLED, {
+          userId: cancellation?.cancelledById ?? appointment.studentId,
+          appointmentId: appointment.appointmentId,
+          reason: cancellation?.reason ?? null,
+        });
       }
 
       return {
@@ -356,7 +382,9 @@ class AppointmentService extends BaseService<
           updateResponse.document,
         );
 
-        const userIds = this.getAppointmentUserIds(updateResponse.document);
+        const userIds = this.getAppointmentUserIds(updateResponse.document, [
+          Role.Counselor,
+        ]);
 
         await NotificationService.queueNotification({
           idNumbers: userIds,
@@ -680,6 +708,11 @@ class AppointmentService extends BaseService<
             title: notification.title,
             body: notification.body,
             data: notification.data,
+          });
+
+          eventBus.emit(AppointmentEvents.REMINDER_SENT, {
+            userId: appointment.studentId,
+            appointmentId: appointment.appointmentId,
           });
         }),
       );

@@ -12,7 +12,9 @@ import {
   JwtService,
   RedisService,
 } from '../../../common/shared';
+import { eventBus, AuthEvents } from '../../../common/shared/events';
 import { IOTPModel } from '../types';
+import { Role } from '../../users';
 
 class AuthService {
   async register(
@@ -212,7 +214,7 @@ class AuthService {
         throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
       }
 
-      if (!user.active) {
+      if (!user.active && user.role !== Role.Student) {
         throw new ErrorResponse(
           'FORBIDDEN',
           'Inactive account, please contact admins.',
@@ -228,6 +230,8 @@ class AuthService {
         user.role,
       );
 
+      eventBus.emit(AuthEvents.LOGIN_SUCCESS, { userId: user.idNumber });
+
       return {
         success: true,
         document: {
@@ -236,6 +240,10 @@ class AuthService {
         },
       };
     } catch (error) {
+      eventBus.emit(AuthEvents.LOGIN_FAILED, {
+        identifier: payload?.idNumber ?? 'unknown',
+        attemptNumber: 1,
+      });
       return {
         success: false,
         error:
@@ -291,6 +299,10 @@ class AuthService {
       }
 
       const { password, ...rest } = userResponse.document.toObject();
+
+      eventBus.emit(AuthEvents.PASSWORD_RESET_REQUESTED, {
+        userId: user.idNumber,
+      });
 
       return {
         success: true,
@@ -350,6 +362,8 @@ class AuthService {
       if (!updatePasswordResponse.success) {
         throw updatePasswordResponse.error;
       }
+
+      eventBus.emit(AuthEvents.PASSWORD_CHANGE, { userId: user.idNumber });
 
       return { success: true };
     } catch (error) {
@@ -415,6 +429,8 @@ class AuthService {
         throw updatePasswordResponse.error;
       }
 
+      eventBus.emit(AuthEvents.PASSWORD_CHANGE, { userId: user.idNumber });
+
       return { success: true };
     } catch (error) {
       return {
@@ -455,6 +471,26 @@ class AuthService {
 
       if (!updateProfileResponse.success) {
         throw updateProfileResponse.error;
+      }
+
+      const userObj = user.toObject ? user.toObject() : (user as any);
+      const fieldsChanged = Object.keys(payload).filter(
+        (k) =>
+          userObj[k] !== payload[k] && !['password', 'fcmToken'].includes(k),
+      );
+      const oldValues: Record<string, any> = {};
+      const newValues: Record<string, any> = {};
+      fieldsChanged.forEach((k) => {
+        oldValues[k] = userObj[k];
+        newValues[k] = payload[k];
+      });
+      if (fieldsChanged.length > 0) {
+        eventBus.emit(AuthEvents.PROFILE_UPDATED, {
+          userId: user.idNumber,
+          fieldsChanged,
+          oldValues,
+          newValues,
+        });
       }
 
       return { success: true };
@@ -502,6 +538,8 @@ class AuthService {
       await RedisService.removeFromRedis(idNumberFromRefresh).catch(() => {});
 
       await UserService.updateFcmToken(idNumber, '');
+
+      eventBus.emit(AuthEvents.LOGOUT, { userId: idNumberFromRefresh });
 
       return { success: true };
     } catch (error) {

@@ -9,6 +9,7 @@ import {
 } from '../../../common/shared/types';
 import { ErrorResponse } from '../../../common/shared/utils';
 import { config } from '../../../core/config';
+import { eventBus, UserEvents } from '../../../common/shared/events';
 
 class UserService extends BaseService<
   IUserModel,
@@ -266,6 +267,32 @@ class UserService extends BaseService<
       };
     }
   }
+  async isActive(
+    idNumber: string,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      const response = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!response.success || !response.document) {
+        throw response.error;
+      }
+
+      return {
+        success: true,
+        document: { active: response.document.active },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
 
   async updateFcmToken(
     idNumber: string,
@@ -287,6 +314,11 @@ class UserService extends BaseService<
       if (!updateResponse.success) {
         throw updateResponse.error;
       }
+
+      eventBus.emit(UserEvents.FCM_TOKEN_UPDATED, {
+        userId: idNumber,
+        channel: 'push',
+      });
 
       return {
         success: true,

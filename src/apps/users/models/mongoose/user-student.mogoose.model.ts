@@ -86,6 +86,15 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
   }
 });
 
+// delete inactive accounts after 12 hours when created
+UserSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 12 * 60 * 60,
+    partialFilterExpression: { active: false },
+  },
+);
+
 const UserModelMongoose = new BaseModel<IUserModel>(
   USER_MODEL_NAME,
   UserSchema,

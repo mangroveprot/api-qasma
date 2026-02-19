@@ -99,6 +99,25 @@ class UserController {
     }
   }
 
+  static async isActive(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const idNumber = (req as any).payload?.aud as string;
+      const response = await UserService.isActive(idNumber);
+
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
   static async sync(
     req: Request,
     res: Response,

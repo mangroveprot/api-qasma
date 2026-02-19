@@ -10,6 +10,7 @@ import { config } from '../../config';
 import { default as AllRoutes } from '../../../common/global-router';
 import { default as DefaultRoutes } from '../../../common/global-router/default';
 import { apiRateLimiter } from '../../../common/shared/middlewares';
+import { requestContextMiddleware } from '../../../common/shared/middlewares';
 import {
   GlobalErrorHandler,
   NotFoundHandler,
@@ -28,6 +29,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
 
+app.use(requestContextMiddleware);
 app.use(apiRateLimiter);
 
 //API routes
