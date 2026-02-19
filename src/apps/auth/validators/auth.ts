@@ -30,6 +30,7 @@ export const registerSchema = Joi.object({
   first_name: Joi.string().required(),
   middle_name: Joi.string().optional().allow('', null),
   last_name: Joi.string().required(),
+  active: Joi.boolean().required(),
   suffix: Joi.string().optional().allow('', null),
   gender: Joi.string().lowercase().valid('male', 'female', 'other').required(),
   date_of_birth: Joi.date().required(),
