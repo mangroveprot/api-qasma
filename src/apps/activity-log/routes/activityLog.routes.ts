@@ -17,8 +17,8 @@ router.get(
 
 router.get(
   '/',
-  //   authenticateAndAttachUserContext,
-  //   authorizeRoles(Role.Counselor, Role.Staff),
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff),
   ActivityLogController.getLogs,
 );
 

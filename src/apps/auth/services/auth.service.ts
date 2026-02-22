@@ -210,7 +210,7 @@ class AuthService {
         throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
       }
 
-      if (!user.verified) {
+      if (!user.verified && !Role.Student) {
         throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
       }
 
