@@ -210,7 +210,7 @@ class AuthService {
         throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
       }
 
-      if (!user.verified && !Role.Student) {
+      if (!user.verified) {
         throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
       }
 
@@ -457,7 +457,7 @@ class AuthService {
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
-          'UNAUTHORIZED',
+          'NOT_FOUND_ERROR',
           'ID number entered is not register',
         );
       }
