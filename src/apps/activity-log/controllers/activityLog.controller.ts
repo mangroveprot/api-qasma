@@ -44,7 +44,10 @@ class ActivityLogController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await ActivityLogService.findAll(req.query);
+      const response = await ActivityLogService.findAll({
+        ...req.query,
+        sort: { createdAt: -1 },
+      });
 
       if (response.success) {
         ApiResponse.success(res, response);
@@ -93,8 +96,13 @@ class ActivityLogController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { format = 'csv', category, action, start_date, end_date } =
-        req.query as any;
+      const {
+        format = 'csv',
+        category,
+        action,
+        start_date,
+        end_date,
+      } = req.query as any;
 
       const start = start_date
         ? new Date(start_date)

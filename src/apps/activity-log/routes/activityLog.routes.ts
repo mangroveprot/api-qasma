@@ -15,12 +15,7 @@ router.get(
   ActivityLogController.getAllLogsByUser,
 );
 
-router.get(
-  '/',
-  authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff),
-  ActivityLogController.getLogs,
-);
+router.get('/', ActivityLogController.getLogs);
 
 router.get(
   '/sync/:lastSynced/',
