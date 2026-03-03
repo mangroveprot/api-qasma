@@ -21,6 +21,7 @@ class ActivityLogController {
       const idNumber = (req as any).payload?.aud as string;
       const response = await ActivityLogService.findAll({
         query: { userId: idNumber },
+        sort: { createdAt: -1 },
         ...req.query,
       });
 
