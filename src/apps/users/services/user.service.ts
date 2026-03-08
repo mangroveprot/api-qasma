@@ -315,10 +315,10 @@ class UserService extends BaseService<
         throw updateResponse.error;
       }
 
-      eventBus.emit(UserEvents.FCM_TOKEN_UPDATED, {
-        userId: idNumber,
-        channel: 'push',
-      });
+      // eventBus.emit(UserEvents.FCM_TOKEN_UPDATED, {
+      //   userId: idNumber,
+      //   channel: 'push',
+      // });
 
       return {
         success: true,

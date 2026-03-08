@@ -26,8 +26,8 @@ router.post(
 router.get(
   '/',
   parseQueryMiddleware,
-  // authenticateAndAttachUserContext,
-  //  authorizeRoles(Role.Counselor, Role.Staff),
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff),
   UserController.getAllUsers,
 );
 

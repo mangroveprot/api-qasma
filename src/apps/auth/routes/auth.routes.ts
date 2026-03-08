@@ -4,6 +4,7 @@ import {
   authenticateAndAttachUserContext,
   attachUserToContext,
   validate,
+  authorizeRoles,
 } from '../../../common/shared';
 import {
   changePasswordSchema,
@@ -15,6 +16,7 @@ import {
   resetPasswordSchema,
   verifyAccountSchema,
 } from '../validators/auth';
+import { Role } from '../../users';
 
 const router = Router();
 
@@ -37,6 +39,7 @@ router.post('/login', validate(loginSchema), AuthController.login);
 router.patch(
   '/update/:idNumber',
   authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AuthController.updateProfile,
 );
 

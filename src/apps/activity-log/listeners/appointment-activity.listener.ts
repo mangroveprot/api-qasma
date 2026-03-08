@@ -1,7 +1,4 @@
-import {
-  eventBus,
-  AppointmentEvents,
-} from '../../../common/shared/events';
+import { eventBus, AppointmentEvents } from '../../../common/shared/events';
 import type {
   AppointmentCreatedPayload,
   AppointmentRescheduledPayload,
@@ -10,13 +7,6 @@ import type {
 } from '../../../common/shared/events';
 import ActivityLogService from '../services/activityLog.service';
 
-/**
- * Subscribes to appointment domain events and writes to the activity log.
- *
- * AppointmentService only emits events (e.g. appointment:created). This
- * listener is the only place that turns those events into log entries—
- * keeping the appointment service free of ActivityLogService imports.
- */
 export function registerAppointmentActivityListeners(): void {
   eventBus.on(
     AppointmentEvents.CREATED,

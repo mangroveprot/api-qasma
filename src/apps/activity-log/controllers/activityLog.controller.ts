@@ -8,10 +8,6 @@ import { ActivityLogService } from '../services';
 import { IActivityLog } from '../models';
 
 class ActivityLogController {
-  /**
-   * Get user's own activity logs (filtered by authenticated user ID)
-   * Accessible by: Student, Counselor, Staff
-   */
   static async getAllLogsByUser(
     req: Request,
     res: Response,
@@ -35,10 +31,6 @@ class ActivityLogController {
     }
   }
 
-  /**
-   * Get all activity logs (admin/staff only)
-   * Accessible by: Counselor, Staff
-   */
   static async getLogs(
     req: Request,
     res: Response,
@@ -60,10 +52,6 @@ class ActivityLogController {
     }
   }
 
-  /**
-   * Sync activity logs (for mobile app synchronization)
-   * Accessible by: All authenticated users
-   */
   static async sync(
     req: Request,
     res: Response,
