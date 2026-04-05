@@ -60,17 +60,18 @@ class UserService extends BaseService<
   async isRegistered(
     identifier?: string | undefined,
   ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
+    const emailOrId = identifier?.trim();
     try {
-      if (!identifier) {
+      if (!emailOrId) {
         throw new ErrorResponse(
           'BAD_REQUEST',
           'ID Number or email is required.',
         );
       }
 
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrId);
 
-      const query = isEmail ? { email: identifier } : { idNumber: identifier };
+      const query = isEmail ? { email: emailOrId } : { idNumber: emailOrId };
 
       const user = (await this.findOne({
         ...query,
