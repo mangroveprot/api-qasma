@@ -7,7 +7,7 @@ async function testGoogleDriveConnection(): Promise<void> {
       `Google Drive is successfully connected and working. Found ${files.length} file(s) in backup folder.`,
     );
   } catch (error) {
-    logger.error('Google Drive connection error:', error as Error);
+    console.error('Google Drive connection error:', error as Error);
     throw error;
   }
 }
