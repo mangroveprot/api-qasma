@@ -70,6 +70,14 @@ interface Config {
     from: string;
     fromName: string;
   };
+  backup: {
+    googleOAuthClientId: string;
+    googleOAuthClientSecret: string;
+    googleOAuthRefreshToken: string;
+    googleDriveFolderId: string;
+    secret: string;
+    maxFiles: number;
+  };
 }
 
 export const config: Config = {
@@ -186,5 +194,13 @@ export const config: Config = {
       process.env.NODE_ENV === 'production' ? process.env.SMTP_PASS || '' : '',
     from: process.env.FROM_EMAIL || 'no-reply@myapp.com',
     fromName: process.env.FROM_NAME || 'QASMA',
+  },
+  backup: {
+    googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID || '',
+    googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET || '',
+    googleOAuthRefreshToken: process.env.GOOGLE_OAUTH_REFRESH_TOKEN || '',
+    googleDriveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID || '',
+    secret: process.env.BACKUP_SECRET || '',
+    maxFiles: 3,
   },
 };

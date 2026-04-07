@@ -6,11 +6,13 @@ import {
   registerAuthActivityListeners,
   registerAppointmentActivityListeners,
 } from '../apps/activity-log/listeners';
+import { testGoogleDriveConnection } from './google-drive-test';
 
 async function initServices() {
   await databasesConnectionSelection();
   await testRedisConnection();
   await testNotificationWorker();
+  await testGoogleDriveConnection();
   registerAuthActivityListeners();
   registerAppointmentActivityListeners();
   // registerUserActivityListeners();
