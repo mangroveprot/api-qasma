@@ -93,6 +93,23 @@ export class NotificationMessages {
     };
   }
 
+  static buildOverdueNotification(appointment: IAppointmentModel) {
+    const { date, time } = this.formatDateTime(appointment.scheduledStartAt);
+
+    return {
+      type: NotificationType.AppointmentCancelled,
+      title: 'Missed Appointment',
+      body: `The appointment on ${date} at ${time} is now overdue.`,
+      data: {
+        appointmentId: appointment.appointmentId,
+        scheduledStartAt: appointment.scheduledStartAt.toISOString(),
+        scheduledEndAt: appointment.scheduledEndAt.toISOString(),
+        cancelledBy: 'system',
+        reason: 'Overdue appointment',
+      },
+    };
+  }
+
   static buildGeneralNotification(
     title: string,
     body: string,

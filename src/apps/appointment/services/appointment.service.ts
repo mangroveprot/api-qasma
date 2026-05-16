@@ -734,6 +734,88 @@ class AppointmentService extends BaseService<
       };
     }
   }
+
+  async markOverdueAppointments(): Promise<
+    SuccessResponseType<any> | ErrorResponseType
+  > {
+    try {
+      const now = moment().tz(config.timeZone);
+
+      const overdueAppointmentsResponse = (await this.findAll({
+        query: {
+          status: {
+            $in: [Status.Pending, Status.Approved],
+          },
+          scheduledStartAt: {
+            $lt: now.toDate(),
+          },
+        },
+      })) as SuccessResponseType<IAppointmentModel>;
+
+      if (
+        !overdueAppointmentsResponse.success ||
+        !overdueAppointmentsResponse.documents ||
+        overdueAppointmentsResponse.documents.length === 0
+      ) {
+        return {
+          success: true,
+          document: {
+            message: 'No overdue appointments found',
+            count: 0,
+          },
+        };
+      }
+
+      const overdueAppointments = overdueAppointmentsResponse.documents;
+
+      await Promise.all(
+        overdueAppointments.map(async (appointment) => {
+          await this.update(
+            {
+              appointmentId: appointment.appointmentId,
+            },
+            {
+              status: Status.Overdue,
+            },
+          );
+
+          const notification =
+            NotificationMessages.buildOverdueNotification(appointment);
+
+          const userIds = this.getAppointmentUserIds(appointment);
+
+          await NotificationService.queueNotification({
+            idNumbers: userIds,
+            type: notification.type,
+            title: notification.title,
+            body: notification.body,
+            data: notification.data,
+          });
+
+          eventBus.emit(AppointmentEvents.OVERDUE, {
+            userId: appointment.studentId,
+            appointmentId: appointment.appointmentId,
+          });
+        }),
+      );
+
+      return {
+        success: true,
+        document: {
+          message: 'Appointments marked as overdue',
+          count: overdueAppointments.length,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
 }
 
 export default new AppointmentService();

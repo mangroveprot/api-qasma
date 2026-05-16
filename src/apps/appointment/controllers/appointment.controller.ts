@@ -231,6 +231,23 @@ class AppointmentController {
       ApiResponse.error(res, error as ErrorResponseType);
     }
   }
+
+  static async overdues(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.markOverdueAppointments();
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
 }
 
 export default AppointmentController;

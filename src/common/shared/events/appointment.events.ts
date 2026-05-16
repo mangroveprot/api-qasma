@@ -11,6 +11,7 @@ export const AppointmentEvents = {
   RESCHEDULED: 'appointment:rescheduled',
   CANCELLED: 'appointment:cancelled',
   REMINDER_SENT: 'appointment:reminder_sent',
+  OVERDUE: 'appointment:overdue',
 } as const;
 
 export type AppointmentCreatedPayload = {
@@ -33,6 +34,11 @@ export type AppointmentCancelledPayload = {
 };
 
 export type AppointmentReminderSentPayload = {
+  userId: string;
+  appointmentId: string;
+};
+
+export type AppointmentOverduePayload = {
   userId: string;
   appointmentId: string;
 };

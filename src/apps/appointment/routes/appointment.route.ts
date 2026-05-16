@@ -92,6 +92,8 @@ router.post(
   AppointmentController.counselorAvailability,
 );
 
-router.get('/reminder/', AppointmentController.reminders);
+router.get('/reminder', AppointmentController.reminders);
+
+router.get('/overdue', AppointmentController.overdues);
 
 export default router;
