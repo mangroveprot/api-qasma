@@ -1,6 +1,9 @@
 # Use an official Node.js base image
 FROM node:22-alpine AS development
 
+# mongodump / mongoexport (backup route)
+RUN apk add --no-cache mongodb-tools
+
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
@@ -23,10 +26,12 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
+RUN apk add --no-cache mongodb-tools
+
 COPY package*.json .
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY --from=development /usr/src/app/build ./build
 
-CMD ["npm", "start"]
+CMD ["node", "build/server.js"]

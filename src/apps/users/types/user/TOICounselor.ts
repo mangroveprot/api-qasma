@@ -1,5 +1,4 @@
 export type TOtherInfoCounselor = {
-  specialization: string;
   unavailableTimes?: {
     [day: string]: {
       start: string;

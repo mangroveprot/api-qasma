@@ -3,221 +3,161 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Code Appointment and Scheduling Manager</title>
-    <style>
-      :root {
-        --primary-green: #32a616;
-        --dark-green: #175608;
-        --light-green: #a5fba5;
-        --dark: #333333;
-        --light: #f8f9fa;
-        --gold: #ffd700;
-      }
-
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #e5e5e5;
-        color: var(--dark);
-        height: 100%;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-      }
-
-      .header-container {
-        width: 100%;
-        max-width: 600px;
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .header-section {
-        text-align: center;
-      }
-
-      .university-logo {
-        width: 120px;
-        height: 120px;
-        margin-bottom: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        position: relative;
-        overflow: hidden;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .university-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-
-      .university-name {
-        color: var(--primary-green);
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-
-      .app-title {
-        color: var(--dark);
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-
-      .campus-info {
-        color: var(--gold);
-        font-size: 12px;
-        font-weight: 500;
-        margin-bottom: 5px;
-      }
-
-      .container {
-        width: 100%;
-        max-width: 600px;
-        margin-top: 20px;
-        text-align: left;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .heading {
-        font-size: 24px;
-        font-weight: bold;
-        color: var(--primary-green);
-        margin-bottom: 15px;
-      }
-
-      .otp-code {
-        font-size: 22px;
-        font-weight: bold;
-        color: var(--dark);
-      }
-
-      .footer {
-        font-size: 12px;
-        color: #888;
-        text-align: center;
-        margin-top: 20px;
-      }
-
-      .footer a {
-        color: var(--primary-green);
-        text-decoration: none;
-      }
-
-      /* Media Queries for responsiveness */
-      @media (max-width: 768px) {
-        .university-logo {
-          width: 100px;
-          height: 100px;
-        }
-
-        .university-name {
-          font-size: 16px;
-        }
-
-        .app-title {
-          font-size: 12px;
-        }
-
-        .campus-info {
-          font-size: 10px;
-        }
-
-        .heading {
-          font-size: 20px;
-        }
-
-        .otp-code {
-          font-size: 20px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .university-logo {
-          width: 90px;
-          height: 90px;
-        }
-
-        .university-name {
-          font-size: 14px;
-        }
-
-        .app-title {
-          font-size: 10px;
-        }
-
-        .campus-info {
-          font-size: 9px;
-        }
-
-        .heading {
-          font-size: 18px;
-        }
-
-        .otp-code {
-          font-size: 18px;
-        }
-      }
-    </style>
+    <title>Verification Code</title>
   </head>
-  <body>
-    <div class="header-container">
-      <div class="header-section">
-        <!-- Centering logo using Flexbox -->
-        <div class="university-logo">
-          <div class="logo-placeholder">
-            <img src="" alt="University Logo" />
-          </div>
-        </div>
-        <div class="university-name">JOSE RIZAL MEMORIAL STATE UNIVERSITY</div>
-        <div class="app-title">
-          QR CODE-ENABLE APPOINTMENT AND SCHEDULING MANAGER APPLICATION
-        </div>
-        <div class="campus-info">KATIPUNAN CAMPUS, Z.N</div>
-      </div>
-    </div>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+        sans-serif;
+      background-color: #f5f5f5;
+    "
+  >
+    <table
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      style="background-color: #f5f5f5; padding: 40px 20px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="500"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              max-width: 500px;
+              background-color: #ffffff;
+              border-radius: 8px;
+              padding: 40px;
+            "
+          >
+            <!-- Logo -->
+            <tr>
+              <td style="padding-bottom: 30px">
+                <img
+                  src="https:www.jrmsu-gcare.com/logo.png"
+                  alt="GCare"
+                  width="50"
+                  height="50"
+                  style="border-radius: 50%"
+                />
+              </td>
+            </tr>
 
-    <!-- OTP Registration Section -->
-    <div class="container">
-      <p class="heading">Your {{title}}</p>
+            <!-- Greeting -->
+            <tr>
+              <td style="padding-bottom: 20px">
+                <p style="margin: 0; font-size: 16px; color: #333333">
+                  Hi {{fullName}},
+                </p>
+              </td>
+            </tr>
 
-      <p>Hi <strong>{{fullName}}</strong>,</p>
+            <!-- Message -->
+            <tr>
+              <td style="padding-bottom: 30px">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    color: #666666;
+                    line-height: 1.5;
+                  "
+                >
+                  Here's your <strong>One-Time Password (OTP)</strong> to verify
+                  your email on GCare:
+                </p>
+              </td>
+            </tr>
 
-      <p>
-        We received your request for a one-time code to verify your identity.
-      </p>
+            <!-- OTP Code -->
+            <tr>
+              <td align="center" style="padding-bottom: 30px">
+                <div
+                  style="
+                    background-color: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 6px;
+                    display: inline-block;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 32px;
+                      font-weight: bold;
+                      color: #4a90e2;
+                      letter-spacing: 8px;
+                    "
+                    >{{otpCode}}</span
+                  >
+                </div>
+              </td>
+            </tr>
 
-      <p>
-        Your 6-digit single-use code is:
-        <span class="otp-code">{{otpCode}}</span>
-      </p>
+            <!-- Validity Info -->
+            <tr>
+              <td style="padding-bottom: 20px">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    color: #666666;
+                    line-height: 1.5;
+                  "
+                >
+                  This OTP is valid for <strong>{{validTime}} minutes</strong>.
+                  If you didn't request this, you can safely ignore this email.
+                </p>
+              </td>
+            </tr>
 
-      <p>
-        Please enter this code only on the official verification page. Keep it
-        private and remember, we will never request it through any other
-        platform.
-      </p>
-      <p>This code is valid for: <strong>{{validTime}} minutes.</strong></p>
-      <p>Best regards,</p>
-      <p>The <i>JRMSU-KC Guidance Team</i></p>
+            <!-- Footer -->
+            <tr>
+              <td style="padding-top: 30px; border-top: 1px solid #e5e5e5">
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #333333">
+                  Best regards,
+                </p>
+                <p style="margin: 0; font-size: 14px; color: #666666">GCare</p>
+              </td>
+            </tr>
+          </table>
 
-      <p class="footer">&copy; 2025 All rights reserved.</p>
-    </div>
+          <!-- Bottom Footer -->
+          <table
+            width="500"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="max-width: 500px; padding-top: 20px"
+          >
+            <tr>
+              <td align="center">
+                <p style="margin: 0 0 10px 0; font-size: 12px; color: #999999">
+                  Jose Rizal Memorial State University • Katipunan Campus,
+                  Zamboanga del Norte
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #999999">
+                  <a
+                    href="https://privacy.jrmsu-gcare.com/"
+                    style="color: #4a90e2; text-decoration: none"
+                    >Privacy Policy</a
+                  >
+                  •
+                  <a
+                    href="https://terms.jrmsu-gcare.com/"
+                    style="color: #4a90e2; text-decoration: none"
+                    >Terms of Service</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

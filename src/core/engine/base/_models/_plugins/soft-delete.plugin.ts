@@ -5,7 +5,6 @@ import { config } from '../../../../config';
 const softDeletePlugin = (schema: Schema) => {
   const deletedAtField = 'deletedAt';
 
-  //if no deleted field in schema then add the field
   if (!schema.path(deletedAtField)) {
     schema.add({ [deletedAtField]: { type: Date, default: null } });
   }
@@ -20,15 +19,18 @@ const softDeletePlugin = (schema: Schema) => {
     await this.save();
   };
 
-  const adddNotDeleteCondition = function (this: any) {
+  const addNotDeleteCondition = function (this: any) {
+    if (this.getOptions().includeDeleted) {
+      return;
+    }
     this.where({ [deletedAtField]: null });
   };
 
-  //this mongo query hook run this function before querying
-  schema.pre('find', adddNotDeleteCondition);
-  schema.pre('findOne', adddNotDeleteCondition);
-  schema.pre('findOneAndUpdate', adddNotDeleteCondition);
-  schema.pre('updateMany', adddNotDeleteCondition);
+  schema.pre('find', addNotDeleteCondition);
+  schema.pre('findOne', addNotDeleteCondition);
+  schema.pre('findOneAndUpdate', addNotDeleteCondition);
+  schema.pre('updateMany', addNotDeleteCondition);
+  schema.pre('countDocuments', addNotDeleteCondition);
 };
 
 export default softDeletePlugin;

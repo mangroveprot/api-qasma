@@ -171,7 +171,7 @@ class JwtService {
           if (err) {
             const errorResponse = new ErrorResponse(
               'UNAUTHORIZED',
-              'Unauthorized',
+              'token expired',
             );
             return reject(errorResponse);
           }
@@ -223,6 +223,48 @@ class JwtService {
 
             return reject(UNAUTHORIZED_ERROR);
           });
+        },
+      );
+    });
+  }
+
+  decodeRefreshToken(refreshToken: string): Promise<{ idNumber: string }> {
+    return new Promise((resolve, reject) => {
+      JWT.verify(
+        refreshToken,
+        this.refreshTokenSecret,
+        (err: any, payload: any) => {
+          if (err) {
+            const errorResponse = new ErrorResponse(
+              'UNAUTHORIZED',
+              'Invalid token',
+            );
+            return reject(errorResponse);
+          }
+
+          const idNumber = payload?.aud as string;
+          resolve({ idNumber });
+        },
+      );
+    });
+  }
+
+  decodeAccessToken(accessToken: string): Promise<{ idNumber: string }> {
+    return new Promise((resolve, reject) => {
+      JWT.verify(
+        accessToken,
+        this.accessTokenSecret,
+        (err: any, payload: any) => {
+          if (err) {
+            const errorResponse = new ErrorResponse(
+              'UNAUTHORIZED',
+              'Invalid token',
+            );
+            return reject(errorResponse);
+          }
+
+          const idNumber = payload?.aud as string;
+          resolve({ idNumber });
         },
       );
     });

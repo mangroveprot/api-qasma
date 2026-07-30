@@ -12,7 +12,9 @@ import {
   JwtService,
   RedisService,
 } from '../../../common/shared';
+import { eventBus, AuthEvents } from '../../../common/shared/events';
 import { IOTPModel } from '../types';
+import { Role } from '../../users';
 
 class AuthService {
   async register(
@@ -20,29 +22,63 @@ class AuthService {
   ): Promise<SuccessResponseType<any> | ErrorResponseType> {
     try {
       const { email, idNumber } = payload;
-
       const [idResponse, emailResponse] = (await Promise.all([
         UserService.findOne({ idNumber }),
         UserService.findOne({ email }),
       ])) as [SuccessResponseType<IUserModel>, SuccessResponseType<IUserModel>];
 
-      const isExist = (() => {
-        const id = idResponse.success || !!idResponse.document;
-        const email = emailResponse.success || !!emailResponse.document;
+      let existingUser: IUserModel | null = null;
 
-        let message = '';
-        if (id && email) message = 'id number and email';
-        else if (id) message = 'id';
-        else if (email) message = 'email';
+      if (idResponse.success && idResponse.document) {
+        existingUser = idResponse.document;
+      } else if (emailResponse.success && emailResponse.document) {
+        existingUser = emailResponse.document;
+      }
 
-        return { id, email, message };
-      })();
+      if (existingUser) {
+        if (existingUser.verified) {
+          const isExist = (() => {
+            const id = idResponse.success || !!idResponse.document;
+            const email = emailResponse.success || !!emailResponse.document;
+            let message = '';
+            if (id && email) message = 'id number and email';
+            else if (id) message = 'id';
+            else if (email) message = 'email';
+            return { message };
+          })();
 
-      if (isExist.id || isExist.email) {
-        throw new ErrorResponse(
-          'UNIQUE_FIELD_ERROR',
-          `The entered ${isExist.message} is already registered.`,
-        );
+          throw new ErrorResponse(
+            'UNIQUE_FIELD_ERROR',
+            `The entered ${isExist.message} is already registered.`,
+          );
+        } else {
+          const updateUserRes = (await UserService.update(
+            { idNumber: existingUser.idNumber },
+            { ...payload },
+          )) as SuccessResponseType<IUserModel>;
+
+          if (!updateUserRes.success || !updateUserRes.document) {
+            throw updateUserRes.error;
+          }
+
+          const otpResponse = (await OTPService.generate(
+            email,
+            config.otp.purposes.ACCOUNT_VERIFICATION.code,
+          )) as SuccessResponseType<IOTPModel>;
+
+          if (!otpResponse.success || !otpResponse.document) {
+            throw otpResponse.error;
+          }
+
+          const { code, ...restOtp } = otpResponse.document.toObject();
+          return {
+            success: true,
+            document: {
+              user: updateUserRes.document,
+              otp: restOtp,
+            },
+          };
+        }
       }
 
       const createUserRes = (await UserService.create(
@@ -63,7 +99,6 @@ class AuthService {
       }
 
       const { code, ...restOtp } = otpResponse.document.toObject();
-
       return {
         success: true,
         document: {
@@ -89,7 +124,7 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const { email, code } = payload;
+      const { email, code, purpose } = payload;
       const userResponse = (await UserService.findOne({
         email,
       })) as SuccessResponseType<IUserModel>;
@@ -98,24 +133,38 @@ class AuthService {
         throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
       }
 
-      if (userResponse.document.verified) {
-        return { success: true }; // If already verified, return success without further actions
+      const purposeCode = config.otp.purposes[purpose]?.code;
+
+      if (!purposeCode) {
+        throw new ErrorResponse('INVALID_PURPOSE', 'Invalid OTP purpose.');
+      }
+
+      if (
+        purpose === 'ACCOUNT_VERIFICATION' &&
+        userResponse.document.verified
+      ) {
+        return { success: true };
       }
 
       const validateOtpResponse = await OTPService.validate(
         email,
         code,
-        config.otp.purposes.ACCOUNT_VERIFICATION.code,
+        purposeCode,
       );
 
       if (!validateOtpResponse.success) {
         throw validateOtpResponse.error;
       }
 
-      const verifyUserResponse = await UserService.markAsVerified(email);
+      if (
+        purpose === 'ACCOUNT_VERIFICATION' &&
+        !userResponse.document.verified
+      ) {
+        const verifyUserResponse = await UserService.markAsVerified(email);
 
-      if (!verifyUserResponse.success) {
-        throw verifyUserResponse.error;
+        if (!verifyUserResponse.success) {
+          throw verifyUserResponse.error;
+        }
       }
 
       return { success: true };
@@ -144,8 +193,8 @@ class AuthService {
 
       if (!userResponse.success || !userResponse.document) {
         throw new ErrorResponse(
-          'UNAUTHORIZED',
-          'Invalid Credentials. ID number entered is not register',
+          'NOT_FOUND_ERROR',
+          'This ID number is not registered.',
         );
       }
 
@@ -158,14 +207,14 @@ class AuthService {
         !isValidPasswordResponse.success ||
         !isValidPasswordResponse.document?.isValid
       ) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Invalid Credentials.');
+        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
       }
 
       if (!user.verified) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
+        throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
       }
 
-      if (!user.active) {
+      if (!user.active && user.role !== Role.Student) {
         throw new ErrorResponse(
           'FORBIDDEN',
           'Inactive account, please contact admins.',
@@ -181,6 +230,8 @@ class AuthService {
         user.role,
       );
 
+      eventBus.emit(AuthEvents.LOGIN_SUCCESS, { userId: user.idNumber });
+
       return {
         success: true,
         document: {
@@ -189,6 +240,10 @@ class AuthService {
         },
       };
     } catch (error) {
+      eventBus.emit(AuthEvents.LOGIN_FAILED, {
+        identifier: payload?.idNumber ?? 'unknown',
+        attemptNumber: 1,
+      });
       return {
         success: false,
         error:
@@ -235,7 +290,7 @@ class AuthService {
       }
 
       const otpResponse = await OTPService.generate(
-        email,
+        getEmail,
         config.otp.purposes.FORGOT_PASSWORD.code,
       );
 
@@ -243,73 +298,16 @@ class AuthService {
         throw otpResponse.error;
       }
 
+      const { password, ...rest } = userResponse.document.toObject();
+
+      eventBus.emit(AuthEvents.PASSWORD_RESET_REQUESTED, {
+        userId: user.idNumber,
+      });
+
       return {
         success: true,
+        document: rest,
       };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof ErrorResponse
-            ? error
-            : new ErrorResponse(
-                'INTERNAL_SERVER_ERROR',
-                (error as Error).message,
-              ),
-      };
-    }
-  }
-
-  async editProfile(
-    payload: any,
-  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
-    try {
-      const { idNumber, password, ...restPayload } = payload;
-      const userResponse = (await UserService.findOne({
-        idNumber,
-      })) as SuccessResponseType<IUserModel>;
-
-      if (!userResponse.success || !userResponse.document) {
-        throw new ErrorResponse(
-          'UNAUTHORIZED',
-          'Invalid Credentials. ID number entered is not register',
-        );
-      }
-
-      const user = userResponse.document;
-
-      if (!user.verified) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Unverified account.');
-      }
-
-      if (!user.active) {
-        throw new ErrorResponse(
-          'FORBIDDEN',
-          'Inactive account, please contact admins.',
-        );
-      }
-
-      const isValidPasswordResponse = (await UserService.isValidPassword(
-        user.idNumber,
-        password,
-      )) as SuccessResponseType<{ isValid: boolean }>;
-      if (
-        !isValidPasswordResponse.success ||
-        !isValidPasswordResponse.document?.isValid
-      ) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Wrong password.');
-      }
-
-      const updateProfileResponse = (await UserService.updateProfile(
-        user.idNumber,
-        restPayload,
-      )) as SuccessResponseType<IUserModel>;
-
-      if (!updateProfileResponse.success) {
-        throw updateProfileResponse.error;
-      }
-
-      return { success: true };
     } catch (error) {
       return {
         success: false,
@@ -328,7 +326,7 @@ class AuthService {
     payload: any,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
-      const { idNumber, email, code, newPassword } = payload;
+      const { idNumber, email, newPassword } = payload;
 
       const userResponse = (await UserService.findOne(
         idNumber ? { idNumber } : { email },
@@ -356,14 +354,70 @@ class AuthService {
         );
       }
 
-      const validateOtpResponse = await OTPService.validate(
-        email,
-        code,
-        config.otp.purposes.FORGOT_PASSWORD.code,
+      const updatePasswordResponse = await UserService.updatePassword(
+        user.idNumber,
+        newPassword,
       );
 
-      if (!validateOtpResponse.success) {
-        throw validateOtpResponse.error;
+      if (!updatePasswordResponse.success) {
+        throw updatePasswordResponse.error;
+      }
+
+      eventBus.emit(AuthEvents.PASSWORD_CHANGE, { userId: user.idNumber });
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async changePassword(
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const { currentPassword, newPassword, idNumber } = payload;
+
+      const userResponse = (await UserService.findOne({
+        idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'This ID number is not register.',
+        );
+      }
+
+      const user = userResponse.document;
+      const isValidPasswordResponse = (await UserService.isValidPassword(
+        user.idNumber,
+        currentPassword,
+      )) as SuccessResponseType<{ isValid: boolean }>;
+      if (
+        !isValidPasswordResponse.success ||
+        !isValidPasswordResponse.document?.isValid
+      ) {
+        throw new ErrorResponse('FORBIDDEN', 'Wrong password.');
+      }
+
+      if (!user.verified) {
+        throw new ErrorResponse('FORBIDDEN', 'Unverified account.');
+      }
+
+      if (!user.active) {
+        throw new ErrorResponse(
+          'FORBIDDEN',
+          'Inactive account, please contact admins.',
+        );
       }
 
       const updatePasswordResponse = await UserService.updatePassword(
@@ -373,6 +427,70 @@ class AuthService {
 
       if (!updatePasswordResponse.success) {
         throw updatePasswordResponse.error;
+      }
+
+      eventBus.emit(AuthEvents.PASSWORD_CHANGE, { userId: user.idNumber });
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
+      };
+    }
+  }
+
+  async editProfile(
+    idNumber: string,
+    payload: any,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const userResponse = (await UserService.findOne({
+        idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!userResponse.success || !userResponse.document) {
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'ID number entered is not register',
+        );
+      }
+
+      const user = userResponse.document;
+
+      const updateProfileResponse = (await UserService.updateProfile(
+        user.idNumber,
+        payload,
+      )) as SuccessResponseType<IUserModel>;
+
+      if (!updateProfileResponse.success) {
+        throw updateProfileResponse.error;
+      }
+
+      const userObj = user.toObject ? user.toObject() : (user as any);
+      const fieldsChanged = Object.keys(payload).filter(
+        (k) =>
+          userObj[k] !== payload[k] && !['password', 'fcmToken'].includes(k),
+      );
+      const oldValues: Record<string, any> = {};
+      const newValues: Record<string, any> = {};
+      fieldsChanged.forEach((k) => {
+        oldValues[k] = userObj[k];
+        newValues[k] = payload[k];
+      });
+      if (fieldsChanged.length > 0) {
+        eventBus.emit(AuthEvents.PROFILE_UPDATED, {
+          userId: user.idNumber,
+          fieldsChanged,
+          oldValues,
+          newValues,
+        });
       }
 
       return { success: true };
@@ -393,6 +511,7 @@ class AuthService {
   async logout(
     accessToken: string,
     refreshToken: string,
+    idNumber: string,
   ): Promise<SuccessResponseType<null> | ErrorResponseType> {
     try {
       if (!refreshToken || !accessToken) {
@@ -403,9 +522,9 @@ class AuthService {
       }
 
       const { idNumber: idNumberFromRefresh } =
-        await JwtService.checkRefreshToken(refreshToken);
+        await JwtService.decodeRefreshToken(refreshToken);
       const { idNumber: idNumberFromAccess } =
-        await JwtService.checkAccessToken(accessToken);
+        await JwtService.decodeAccessToken(accessToken);
 
       if (idNumberFromAccess !== idNumberFromRefresh) {
         throw new ErrorResponse(
@@ -414,11 +533,13 @@ class AuthService {
         );
       }
 
-      // Blacklist the access token
-      await RedisService.setBlacklistedInRedis(accessToken);
+      await RedisService.setBlacklistedInRedis(accessToken).catch(() => {});
 
-      // Remove the refresh token from Redis
-      await RedisService.removeFromRedis(idNumberFromRefresh);
+      await RedisService.removeFromRedis(idNumberFromRefresh).catch(() => {});
+
+      await UserService.updateFcmToken(idNumber, '');
+
+      eventBus.emit(AuthEvents.LOGOUT, { userId: idNumberFromRefresh });
 
       return { success: true };
     } catch (error) {

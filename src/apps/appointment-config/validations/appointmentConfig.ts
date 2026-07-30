@@ -1,7 +1,6 @@
 import Joi from 'joi';
 
 export const appointmentConfigSchema = Joi.object({
-  session_duration: Joi.number().required(),
   buffer_time: Joi.number().required(),
   booking_lead_time: Joi.number().required(),
   slot_days_range: Joi.number().required(),
@@ -22,15 +21,21 @@ export const appointmentConfigSchema = Joi.object({
       ),
     )
     .optional(),
+
   category_and_type: Joi.object()
     .pattern(
       Joi.string(),
-      Joi.array().items(
-        Joi.object({
-          type: Joi.string().required(),
-          duration: Joi.number().required(),
-        }),
-      ),
+      Joi.object({
+        description: Joi.string().optional().allow(null),
+        types: Joi.array()
+          .items(
+            Joi.object({
+              type: Joi.string().required(),
+              duration: Joi.number().required(),
+            }),
+          )
+          .required(),
+      }),
     )
     .required(),
 });

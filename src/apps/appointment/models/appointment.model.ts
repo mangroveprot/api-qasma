@@ -21,6 +21,8 @@ const AppointmentSchema = createBaseSchema<IAppointmentModel>(
     appointmentCategory: { type: String, required: true },
     appointmentType: { type: String, required: true },
     description: { type: String, required: true },
+    feedbackSubmitted: { type: Boolean, default: false },
+    reminderSent: { type: Boolean, default: false },
     status: {
       type: String,
       enum: [...Object.values(Status)],
@@ -34,6 +36,13 @@ const AppointmentSchema = createBaseSchema<IAppointmentModel>(
     checkInTime: { type: Date },
     staffId: { type: String },
     counselorId: { type: String },
+    reschedule: {
+      rescheduledBy: { type: String, default: null },
+      remarks: { type: String, default: null },
+      rescheduledAt: { type: Date, default: null },
+      previousStart: { type: Date, default: null },
+      previousEnd: { type: Date, default: null },
+    },
     qrCode: {
       token: { type: String, default: null },
       scannedById: { type: String, default: null },

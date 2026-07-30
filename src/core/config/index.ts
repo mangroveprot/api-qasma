@@ -32,6 +32,18 @@ interface Config {
     tokenExpireTime: number; //15days
     blacklistExpireTime: number; //30days
   };
+  firebase: {
+    projectId: string;
+    privateKey: string;
+    clientEmail: string;
+  };
+  bullmq: {
+    connection: {
+      host: string;
+      port: number;
+      password?: string;
+    };
+  };
   rate: {
     limit: number;
     max: number;
@@ -48,12 +60,23 @@ interface Config {
     >;
   };
   mail: {
+    strategy: string;
+    apiHost: string;
+    apiToken: string;
     host: string;
     port: number;
     user: string;
     pass: string;
     from: string;
     fromName: string;
+  };
+  backup: {
+    googleOAuthClientId: string;
+    googleOAuthClientSecret: string;
+    googleOAuthRefreshToken: string;
+    googleDriveFolderId: string;
+    secret: string;
+    maxFiles: number;
   };
 }
 
@@ -103,6 +126,26 @@ export const config: Config = {
       10,
     ),
   },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID || '',
+    privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+  },
+  bullmq: {
+    connection: {
+      host:
+        process.env.NODE_ENV === 'production'
+          ? process.env.REDIS_CLOUD_HOST || ''
+          : process.env.REDIS_HOST || 'localhost',
+      port: parseInt(
+        process.env.NODE_ENV === 'production'
+          ? process.env.REDIS_CLOUD_PORT || '6379'
+          : process.env.REDIS_PORT || '6379',
+        10,
+      ),
+      password: process.env.REDIS_PASSWORD || undefined,
+    },
+  },
   rate: {
     limit: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
     max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
@@ -112,7 +155,7 @@ export const config: Config = {
   },
   otp: {
     length: parseInt(process.env.OTP_LENGTH || '6', 10),
-    expiration: parseInt(process.env.OTP_EXPIRATION || '5') * 60 * 100,
+    expiration: parseInt(process.env.OTP_EXPIRATION || '5') * 60 * 1000,
     purposes: {
       FORGOT_PASSWORD: {
         code: 'FORGOT_PASSWORD',
@@ -129,10 +172,16 @@ export const config: Config = {
     },
   },
   mail: {
+    strategy:
+      process.env.NODE_ENV === 'production'
+        ? process.env.MAIL_STRATEGY || ''
+        : 'smtp',
     host:
       process.env.NODE_ENV === 'production'
         ? process.env.SMTP_HOST || ''
         : process.env.MAILDEV_HOST || 'localhost',
+    apiHost: process.env.MAIL_API_HOST || '',
+    apiToken: process.env.MAIL_API_TOKEN || '',
     port: parseInt(
       process.env.NODE_ENV === 'production'
         ? process.env.SMTP_PORT || '587'
@@ -145,5 +194,13 @@ export const config: Config = {
       process.env.NODE_ENV === 'production' ? process.env.SMTP_PASS || '' : '',
     from: process.env.FROM_EMAIL || 'no-reply@myapp.com',
     fromName: process.env.FROM_NAME || 'QASMA',
+  },
+  backup: {
+    googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID || '',
+    googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET || '',
+    googleOAuthRefreshToken: process.env.GOOGLE_OAUTH_REFRESH_TOKEN || '',
+    googleDriveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID || '',
+    secret: process.env.BACKUP_SECRET || '',
+    maxFiles: 3,
   },
 };

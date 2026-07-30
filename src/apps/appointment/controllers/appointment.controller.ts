@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponse, ErrorResponseType } from '../../../common/shared';
 import { AppointmentService } from '../services';
+import moment from 'moment';
 
 class AppointmentController {
   static async createAppointment(
@@ -26,9 +27,37 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await AppointmentService.findAll(req.body);
+      const response = await AppointmentService.findAll(req.query);
       if (response.success) {
         ApiResponse.success(res, response, 201);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async sync(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { lastSynced } = req.params;
+      const { idNumber } = req.query;
+
+      const query = idNumber ? { studentId: idNumber as string } : {};
+
+      const response = await AppointmentService.findAll({
+        query,
+        lastSynced: lastSynced,
+        paginate: false,
+        includeDeleted: true,
+      });
+
+      if (response.success) {
+        ApiResponse.success(res, response, 200);
       } else {
         throw response;
       }
@@ -46,6 +75,27 @@ class AppointmentController {
       const { appoinmentId } = req.params;
       const response = await AppointmentService.findOne({
         appoinmentId: appoinmentId,
+      });
+
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async getAllAppointmentByUser(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const idNumber = (req as any).payload?.aud as string;
+      const response = await AppointmentService.findAll({
+        query: { studentId: idNumber },
       });
 
       if (response.success) {
@@ -98,6 +148,7 @@ class AppointmentController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const { appoinmentId } = req.params;
       const response = await AppointmentService.acceptAppointment(req.body);
       if (response.success) {
         ApiResponse.success(res, response);
@@ -135,6 +186,59 @@ class AppointmentController {
       const response = await AppointmentService.generateAppointmentSlots(
         req.params.duration,
       );
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async counselorAvailability(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.checkCounselorAvailability(
+        req.body,
+      );
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async reminders(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.sendAppointmentReminders();
+      if (response.success) {
+        ApiResponse.success(res, response);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
+  static async overdues(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AppointmentService.markOverdueAppointments();
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

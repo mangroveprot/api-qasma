@@ -15,7 +15,7 @@ export interface IUserModel extends IUser, IBaseModel, Document {}
 const UserSchema = createBaseSchema<IUserModel>(
   {
     idNumber: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, unique: true },
     password: { type: String, required: true },
     role: {
       type: String,
@@ -24,15 +24,16 @@ const UserSchema = createBaseSchema<IUserModel>(
     },
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
-    first_name: { type: String, required: true },
+    first_name: { type: String },
     middle_name: { type: String },
-    last_name: { type: String, required: true },
+    last_name: { type: String },
     suffix: { type: String },
-    gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-    date_of_birth: { type: Date, required: true },
-    contact_number: { type: String, required: true },
+    gender: { type: String, enum: ['male', 'female', 'other'] },
+    date_of_birth: { type: Date },
+    contact_number: { type: String },
     address: { type: String },
     facebook: { type: String },
+    fcmToken: { type: String },
     other_info: {
       type: Schema.Types.Mixed,
       required: true,
@@ -55,6 +56,44 @@ UserSchema.pre('save', async function (next) {
     next(error as CallbackError);
   }
 });
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  try {
+    const update = this.getUpdate() as any;
+
+    const passwordToHash = update?.password || update?.$set?.password;
+    const isInRoot = !!update?.password;
+    const isInSet = !!update?.$set?.password;
+
+    if (passwordToHash) {
+      const salt = await bycrypt.genSalt(config.bcrypt.saltRound);
+      const hashedPassword = await bycrypt.hash(passwordToHash, salt);
+
+      if (isInRoot) {
+        update.password = hashedPassword;
+      }
+
+      if (isInSet) {
+        update.$set.password = hashedPassword;
+      }
+
+      this.setUpdate(update);
+    }
+
+    next();
+  } catch (error) {
+    next(error as CallbackError);
+  }
+});
+
+// delete inactive accounts after 12 hours when created
+UserSchema.index(
+  { updatedAt: 1 },
+  {
+    expireAfterSeconds: 12 * 60 * 60,
+    partialFilterExpression: { active: false },
+  },
+);
 
 const UserModelMongoose = new BaseModel<IUserModel>(
   USER_MODEL_NAME,

@@ -1,32 +1,31 @@
 import { MailService } from './index';
 import { ErrorResponse, ErrorResponseType, SuccessResponseType } from '../..';
 import { config } from '../../../../core/config';
-import mailService from './mail.service';
 
 class MailServiceUtilities {
-  static async sendOtp({
-    to,
-    code,
-    purpose,
-  }: {
-    to: string;
-    code: string;
-    purpose: string;
-  }): Promise<SuccessResponseType<void> | ErrorResponseType> {
-    const otpPurpose = config.otp.purposes[purpose];
-    if (!otpPurpose) {
-      return {
-        success: false,
-        error: new ErrorResponse('BAD_REQUEST', 'Invalid OTP purpose provided'),
-      };
-    }
+  // static async sendOtp({
+  //   to,
+  //   code,
+  //   purpose,
+  // }: {
+  //   to: string;
+  //   code: string;
+  //   purpose: string;
+  // }): Promise<SuccessResponseType<void> | ErrorResponseType> {
+  //   const otpPurpose = config.otp.purposes[purpose];
+  //   if (!otpPurpose) {
+  //     return {
+  //       success: false,
+  //       error: new ErrorResponse('BAD_REQUEST', 'Invalid OTP purpose provided'),
+  //     };
+  //   }
 
-    const subject = otpPurpose.title;
-    const text = `${otpPurpose.message} ${code}\n\nThis code is valid for ${
-      config.otp.expiration / 60000
-    } minutes.`;
-    return await MailService.sendMail({ to, subject, text });
-  }
+  //   const subject = otpPurpose.title;
+  //   const text = `${otpPurpose.message} ${code}\n\nThis code is valid for ${
+  //     config.otp.expiration / 60000
+  //   } minutes.`;
+  //   return await MailService.sendMail({ to, subject, text });
+  // }
   static async sendOtpWithTemplate({
     to,
     code,

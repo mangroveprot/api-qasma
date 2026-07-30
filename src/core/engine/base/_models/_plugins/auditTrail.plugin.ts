@@ -17,37 +17,33 @@ const auditTrailPlugin = (schema: Schema) => {
     }
 
     if (this.isNew || this.isModified()) {
-      this.set(
-        'createdBy',
-        (config.runningProd ? currentUser.idNumber : 'unknown') || null,
-      );
-      logger.info(
-        'Warning: currentUser is undefined. Audit trail field will not be set.',
-      );
-    } else {
-      this.set(
-        'updatedBy',
-        (config.runningProd ? currentUser.idNumber : 'unknown') || null,
-      );
-      logger.info(
-        'Warning: currentUser is undefined. Audit trail field will not be set.',
-      );
+      const idNumber = currentUser?.idNumber;
+
+      if (idNumber) {
+        this.set('createdBy', idNumber);
+      } else {
+        this.set('createdBy', 'unknown');
+        logger.info(
+          'Warning: currentUser is undefined or missing idNumber. Audit trail field set to "unknown".',
+        );
+      }
     }
     next();
   });
 
   schema.pre('findOneAndUpdate', function (next) {
     const currentUser = AsyncStorageService.getInstance().get('currentUser');
-    if (!currentUser) {
-      logger.warn(
-        'Warning: currentUser is undefined. Audit trail fields will not be set.',
+
+    const idNumber = currentUser?.idNumber;
+
+    if (idNumber) {
+      this.set('updatedBy', idNumber);
+    } else {
+      this.set('updatedBy', 'unknown');
+      logger.info(
+        'Warning: currentUser is undefined or missing idNumber. Audit trail field set to "unknown".',
       );
     }
-
-    this.set(
-      'updatedBy',
-      (config.runningProd ? currentUser.idNumber : 'unknown') || null,
-    );
     next();
   });
 

@@ -50,10 +50,12 @@ class QRCodeService {
 
       const objToString = stringifyObject(payload);
 
-      // Compare the stringified payload with the qrToken
       const isMatch = await bcrypt.compare(objToString, qrToken);
       if (!isMatch) {
-        throw new ErrorResponse('UNAUTHORIZED', 'Data did not match.');
+        throw new ErrorResponse(
+          'NOT_FOUND_ERROR',
+          'The QR code does not match the appointment.',
+        );
       }
 
       return {

@@ -23,7 +23,7 @@
 
 ## Appointment
 
-- [`[POST] /api/appointment/create`](#post-apiappointmentcreate) => create an appointment
+- [`[POST] /api/appointment/`](#post-apiappointment) => create an appointment
 - [`[GET] /api/appointment/`](#get-apiappointment) => get all appointments
 - [`[GET] /api/appointment/slots/:duration`](#get-apiappointmentslotsduration) => get available slots
 - [`[GET] /api/appointment/getById/:appointmentId`](#get-apiappointmentgetbyidappointmentid) => get appointment by ID
@@ -818,7 +818,7 @@ Authorization: Bearer your_access_token
 
 ---
 
-## `[POST]` /api/appointment/create
+## `[POST]` /api/appointment/
 
 ### Description
 

@@ -45,6 +45,8 @@ const otpSchema = createBaseSchema<IOTPModel>(
   },
 );
 
+otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 const OTPModel = new BaseModel<IOTPModel>(OTP_MODEL_NAME, otpSchema).getModel();
 
 export default OTPModel;

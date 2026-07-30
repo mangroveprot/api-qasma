@@ -15,10 +15,12 @@ export const attachUserToContext = (
   const role = payload?.role || req.body.role;
 
   if (idNumber && role) {
+    const existingStore = asyncStorage.getStore();
+    const newStore = existingStore ? new Map(existingStore) : new Map();
     asyncStorage.run(() => {
       asyncStorage.set('currentUser', { idNumber, role });
       next();
-    });
+    }, newStore);
   } else {
     logger.warn(
       'Warning: Unable to attach user context, missing idNumber or role.',

@@ -9,6 +9,7 @@ import {
 } from '../../../common/shared/types';
 import { ErrorResponse } from '../../../common/shared/utils';
 import { config } from '../../../core/config';
+import { eventBus, UserEvents } from '../../../common/shared/events';
 
 class UserService extends BaseService<
   IUserModel,
@@ -17,7 +18,13 @@ class UserService extends BaseService<
   constructor() {
     const userRepo = new UserStudentMongooseRepository(UserModelMongoose);
     super(userRepo);
-    this.allowedFilterFields = ['role'];
+    this.allowedFilterFields = [
+      'role',
+      'email',
+      'idNumber',
+      'active',
+      'verified',
+    ];
   }
 
   async isValidPassword(
@@ -46,6 +53,50 @@ class UserService extends BaseService<
           error instanceof ErrorResponse
             ? error
             : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async isRegistered(
+    identifier?: string | undefined,
+  ): Promise<SuccessResponseType<IUserModel> | ErrorResponseType> {
+    const emailOrId = identifier?.trim();
+    try {
+      if (!emailOrId) {
+        throw new ErrorResponse(
+          'BAD_REQUEST',
+          'ID Number or email is required.',
+        );
+      }
+
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrId);
+
+      const query = isEmail ? { email: emailOrId } : { idNumber: emailOrId };
+
+      const user = (await this.findOne({
+        ...query,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (user.success && user.document?.verified) {
+        throw new ErrorResponse(
+          'UNAUTHORIZED',
+          `This ${isEmail ? 'email' : 'ID number'} is already registered.`,
+        );
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse(
+                'INTERNAL_SERVER_ERROR',
+                (error as Error).message,
+              ),
       };
     }
   }
@@ -153,14 +204,14 @@ class UserService extends BaseService<
         throw response.error;
       }
 
-      const hashedPassword = await bycrypt.hash(
-        newPassword,
-        config.bcrypt.saltRound,
-      );
+      // const hashedPassword = await bycrypt.hash(
+      //   newPassword,
+      //   config.bcrypt.saltRound,
+      // );
 
       const updateResponse = (await this.update(
         { idNumber: idNumber },
-        { password: hashedPassword },
+        { password: newPassword },
       )) as SuccessResponseType<IUserModel>;
 
       if (!updateResponse.success) {
@@ -206,6 +257,72 @@ class UserService extends BaseService<
       return {
         success: true,
         document: updateResponse.document,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+  async isActive(
+    idNumber: string,
+  ): Promise<SuccessResponseType<any> | ErrorResponseType> {
+    try {
+      const response = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!response.success || !response.document) {
+        throw response.error;
+      }
+
+      return {
+        success: true,
+        document: { active: response.document.active },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof ErrorResponse
+            ? error
+            : new ErrorResponse('UNKNOWN_ERROR', (error as Error).message),
+      };
+    }
+  }
+
+  async updateFcmToken(
+    idNumber: string,
+    fcmToken: string,
+  ): Promise<SuccessResponseType<null> | ErrorResponseType> {
+    try {
+      const response = (await this.findOne({
+        idNumber: idNumber,
+      })) as SuccessResponseType<IUserModel>;
+
+      if (!response.success || !response.document) {
+        throw new ErrorResponse('NOT_FOUND_ERROR', 'User not found.');
+      }
+
+      const updateResponse = (await this.update({ idNumber: idNumber }, {
+        fcmToken: fcmToken,
+      } as any)) as SuccessResponseType<IUserModel>;
+
+      if (!updateResponse.success) {
+        throw updateResponse.error;
+      }
+
+      // eventBus.emit(UserEvents.FCM_TOKEN_UPDATED, {
+      //   userId: idNumber,
+      //   channel: 'push',
+      // });
+
+      return {
+        success: true,
       };
     } catch (error) {
       return {

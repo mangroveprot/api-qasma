@@ -1,9 +1,4 @@
-import {
-  Role,
-  TOtherInfoCounselor,
-  TOtherInfoStaff,
-  TOtherInfoStudent,
-} from './index';
+import { Role, TOtherInfoCounselor, TOtherInfoStudent } from './index';
 
 export type TUserRole = (typeof Role)[keyof typeof Role];
 export type gender = 'male' | 'female' | 'other';
@@ -24,5 +19,6 @@ export interface IUser {
   contact_number: string;
   address?: string;
   facebook?: string;
-  other_info: TOtherInfoStudent | TOtherInfoStaff | TOtherInfoCounselor;
+  fcmToken?: string;
+  other_info: TOtherInfoStudent | TOtherInfoCounselor;
 }

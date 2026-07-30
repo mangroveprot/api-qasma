@@ -17,13 +17,22 @@ export interface IAppointment {
   checkInTime?: Date;
   staffId?: string;
   counselorId?: string;
+  feedbackSubmitted?: boolean;
+  reminderSent?: boolean;
+  reschedule?: {
+    rescheduledBy: string;
+    remarks: string;
+    rescheduledAt?: string;
+    previousStart?: Date;
+    previousEnd?: Date;
+  };
   qrCode?: {
     token: string; //qr token
     scannedById?: string; // scanned by who?
     scannedAt?: Date;
   };
   cancellation?: {
-    cancelledById: string; // ID of the user who cancelled
+    cancelledById: string;
     reason: string;
     cancelledAt: Date;
   };

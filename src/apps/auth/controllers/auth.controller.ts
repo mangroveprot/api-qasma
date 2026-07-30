@@ -60,8 +60,13 @@ class AuthController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const idNumber = (req as any).payload?.aud as string;
       const { accessToken, refreshToken } = req.body;
-      const response = await AuthService.logout(accessToken, refreshToken);
+      const response = await AuthService.logout(
+        accessToken,
+        refreshToken,
+        idNumber,
+      );
       if (response.success) {
         ApiResponse.success(res, response, 202);
       } else {
@@ -106,6 +111,23 @@ class AuthController {
     }
   }
 
+  static async changePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await AuthService.changePassword(req.body);
+      if (response.success) {
+        ApiResponse.success(res, response, 200);
+      } else {
+        throw response;
+      }
+    } catch (error) {
+      ApiResponse.error(res, error as ErrorResponseType);
+    }
+  }
+
   static async refreshToken(
     req: Request,
     res: Response,
@@ -129,7 +151,8 @@ class AuthController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await AuthService.editProfile(req.body);
+      const { idNumber } = req.params;
+      const response = await AuthService.editProfile(idNumber, req.body);
       if (response.success) {
         ApiResponse.success(res, response);
       } else {

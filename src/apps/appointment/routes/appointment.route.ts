@@ -6,8 +6,10 @@ import {
   validate,
 } from '../../../common/shared';
 import {
+  acceptAppointmentSchema,
   appointmentSchema,
   cancelAppointmentSchema,
+  counselorAvailabilitySchema,
   updateAppointmentSchema,
   verifyAppointmentSchema,
 } from '../validation';
@@ -16,24 +18,34 @@ import { Role } from '../../users';
 const router = Router();
 
 router.post(
-  '/create',
+  '/',
   authenticateAndAttachUserContext,
   validate(appointmentSchema),
-  authorizeRoles(Role.Student),
+  authorizeRoles(Role.Student, Role.Staff, Role.Counselor),
   AppointmentController.createAppointment,
 );
+
+router.get(
+  '/getAllByUser/',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Student),
+  AppointmentController.getAllAppointmentByUser,
+);
+
 router.get(
   '/',
   authenticateAndAttachUserContext,
-  authorizeRoles(Role.Counselor, Role.Staff),
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
   AppointmentController.getAllAppointments,
 );
+
 router.get(
-  '/slots/:duration',
+  '/sync/:lastSynced/',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
-  AppointmentController.getSlots,
+  AppointmentController.sync,
 );
+
 router.get('/getById/:appointmentId', AppointmentController.getAppointmentById);
 router.patch(
   '/update',
@@ -42,6 +54,7 @@ router.patch(
   validate(updateAppointmentSchema),
   AppointmentController.updateAppointment,
 );
+
 router.patch(
   '/cancel',
   authenticateAndAttachUserContext,
@@ -53,7 +66,7 @@ router.put(
   '/accept',
   authenticateAndAttachUserContext,
   authorizeRoles(Role.Staff),
-  validate(updateAppointmentSchema),
+  validate(acceptAppointmentSchema),
   AppointmentController.acceptAppointment,
 );
 router.put(
@@ -63,5 +76,24 @@ router.put(
   validate(verifyAppointmentSchema),
   AppointmentController.verifyAppointment,
 );
+
+router.get(
+  '/slots/:duration',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff, Role.Student),
+  AppointmentController.getSlots,
+);
+
+router.post(
+  '/counselors/availability',
+  authenticateAndAttachUserContext,
+  authorizeRoles(Role.Counselor, Role.Staff),
+  validate(counselorAvailabilitySchema),
+  AppointmentController.counselorAvailability,
+);
+
+router.get('/reminder', AppointmentController.reminders);
+
+router.get('/overdue', AppointmentController.overdues);
 
 export default router;

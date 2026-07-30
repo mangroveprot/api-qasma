@@ -12,7 +12,7 @@ class ErrorResponse extends Error {
     suggestions: string[] = [],
     originalError?: Error,
   ) {
-    const errorCode: ErrorCode = ErrorCodes[code] || ErrorCodes.GENERALD_ERROR;
+    const errorCode: ErrorCode = ErrorCodes[code] || ErrorCodes.GENERAL_ERROR;
     super(message || errorCode.message);
     (this.code = errorCode.code),
       (this.statusCode = errorCode.statusCode),
